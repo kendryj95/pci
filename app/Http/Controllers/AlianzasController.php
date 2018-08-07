@@ -54,7 +54,13 @@ class AlianzasController extends Controller
     {
     	$alianza = DB::select("SELECT * FROM alianzas WHERE id=?", [$id]);
 
-    	return view('alianzas.edit', ["alianza" => $alianza[0]]);
+    	if ($alianza) {
+    		return view('alianzas.edit', ["alianza" => $alianza[0]]);
+    	} else {
+    		return redirect('/alianzas');
+    	}
+
+    	
     }
 
     public function editar(Request $request)

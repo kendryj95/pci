@@ -20,7 +20,7 @@ Route::get('/alianzas', 'AlianzasController@index');
 Route::get('/alianzas/create', function (){ return view('alianzas.create'); });
 Route::post('/alianzas/crear', 'AlianzasController@create');
 
-Route::get('/alianzas/edit/{id}', 'AlianzasController@editView');
+Route::get('/alianzas/edit/{id}', 'AlianzasController@editView')->where(['id' => '[0-9]+']);
 Route::post('/alianzas/editar', 'AlianzasController@editar');
 
 Route::post('/alianzas/delete', 'AlianzasController@delete');
