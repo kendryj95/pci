@@ -8,94 +8,81 @@
 
 @section('title', 'Alianzas')
 
+@section('breadcrumb')
+
+  @component('components.bread')
+
+  @slot('title', 'Alianzas')
+  @slot('last_page', 'Dashboard')
+
+  @endcomponent
+
+@endsection
+
 @section('content')
 
-<!-- Content Header (Page header) -->
-<section class="content-header">
-  <h1>
-    Alianzas
-    <small>Administración</small>
-  </h1>
-  <ol class="breadcrumb">
-    <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
-    <li class="active">Alianzas</li>
-  </ol>
-</section>
-
-<!-- Main content -->
-<section class="content">
-  
 <div class="row">
-  <div class="col-xs-12 col-lg-12">
-
-    <div class="row">
-      <div class="col-xs-12 col-lg-6">
-      
-      @if (isset($_GET['success']) && $_GET['success'] == 1)
-        <div class="alert alert-success">
-          <p>Se ha creado la <b>alianza</b> satisfactoriamente</p>
-        </div>
-      @elseif (isset($_GET['success']) && $_GET['success'] == 2)
-        <div class="alert alert-success">
-          <p>Se ha actualizado el <b>usuario</b> de inicio de sesion satisfactoriamente</p>
-        </div>
-      @elseif (isset($_GET['success']) && $_GET['success'] == 3)
-        <div class="alert alert-success">
-          <p>Se ha creado el <b>trabajador</b> satisfactoriamente.</p>
-        </div>
-      @elseif (isset($_GET['success']) && $_GET['success'] == 4)
-        <div class="alert alert-success">
-          <p>Se ha actualizado el <b>trabajador</b> satisfactoriamente.</p>
-        </div>
-      @endif
-      </div>
+  <div class="col-xs-12 col-lg-6">
+  
+  @if (isset($_GET['success']) && $_GET['success'] == 1)
+    <div class="alert alert-success">
+      <p>Se ha creado la <b>alianza</b> satisfactoriamente</p>
     </div>
-
-    <div class="box">
-      <div class="box-header">
-        <h3 class="box-title">Administración</h3>
-      </div>
-      <!-- /.box-header -->
-      <div class="box-body">
-        <a href="alianzas/create" class="btn btn-default" title="Agregar"><i class="fa fa-plus-square fa-lg"></i></a>&nbsp;
-        <a href="javascript:void(0)" onclick="editar()" class="btn btn-default" title="Editar"><i class="fa fa-pencil-square fa-lg"></i></a>&nbsp;
-        <a href="javascript:void(0)" onclick="deleteAlianza()" class="btn btn-default" title="Eliminar"><i class="fa fa-trash fa-lg"></i></a>
-        <br><br>
-        <div class="table-responsive">
-          <table id="tableAlianzas" class="table table-bordered table-striped">
-            <thead>
-            <tr>
-              <th></th>
-              <th>No.</th>
-              <th>ALIANZA</th>
-              <th>TELEFONO</th>
-              <th>DIRECTOR</th>
-              <th>CORREO</th>
-            </tr>
-            </thead>
-            <tbody>
-              @foreach ($alianzas as $i => $alianza)
-              <tr>
-                <td><input type="checkbox" class="alianzas" value="{{ $alianza->id }}" name="ali[]"></td>
-                <td>{{ $i+1 }}</td>
-                <td>{{ $alianza->nombre }}</td>
-                <td>{{ $alianza->telefono }}</td>
-                <td>{{ $alianza->director }}</td>
-                <td>{{ $alianza->correo }}</td>
-              </tr>
-              @endforeach
-            </tbody>
-          </table>
-        </div>
-      </div>
-      <!-- /.box-body -->
+  @elseif (isset($_GET['success']) && $_GET['success'] == 2)
+    <div class="alert alert-success">
+      <p>Se ha actualizado el <b>usuario</b> de inicio de sesion satisfactoriamente</p>
     </div>
-    <!-- /.box -->
+  @elseif (isset($_GET['success']) && $_GET['success'] == 3)
+    <div class="alert alert-success">
+      <p>Se ha creado el <b>trabajador</b> satisfactoriamente.</p>
+    </div>
+  @elseif (isset($_GET['success']) && $_GET['success'] == 4)
+    <div class="alert alert-success">
+      <p>Se ha actualizado el <b>trabajador</b> satisfactoriamente.</p>
+    </div>
+  @endif
   </div>
 </div>
 
-</section>
-<!-- /.content -->
+<div class="row">
+  <div class="col-lg-12 col-md-12">
+      <div class="card">
+          <div class="card-body">
+              <a href="alianzas/create" class="btn btn-primary" title="Agregar"><i class="mdi mdi-plus-box"></i></a>&nbsp;
+              <a href="javascript:void(0)" onclick="editar()" class="btn btn-success" title="Editar"><i class="mdi mdi-pencil-box"></i></a>&nbsp;
+              <a href="javascript:void(0)" onclick="deleteAlianza()" class="btn btn-danger" title="Eliminar"><i class="mdi mdi-delete"></i></a>
+              <br><br>
+              <div class="table-responsive">
+                <table id="tableAlianzas" class="table table-bordered table-striped">
+                  <thead>
+                  <tr>
+                    <th></th>
+                    <th>No.</th>
+                    <th>ALIANZA</th>
+                    <th>TELEFONO</th>
+                    <th>DIRECTOR</th>
+                    <th>CORREO</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                    @foreach ($alianzas as $i => $alianza)
+                    <tr>
+                      <td><input type="checkbox" class="alianzas" value="{{ $alianza->id }}" id="id_{{ $alianza->id }}" name="ali[]"><label for="id_{{ $alianza->id }}"></label></td>
+                      <td>{{ $i+1 }}</td>
+                      <td>{{ $alianza->nombre }}</td>
+                      <td>{{ $alianza->telefono }}</td>
+                      <td>{{ $alianza->director }}</td>
+                      <td>{{ $alianza->correo }}</td>
+                    </tr>
+                    @endforeach
+                  </tbody>
+                </table>
+              </div>
+          </div>
+      </div>
+  </div>
+</div>
+
 @endsection
 
 @push('scripts')
