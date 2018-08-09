@@ -5,7 +5,7 @@
         <li> <a class="has-arrow waves-effect waves-dark" href="#" aria-expanded="false"><i class="mdi mdi-settings"></i><span class="hide-menu">Configuración </span></a>
             <ul aria-expanded="false" class="collapse">
                 <li class=""><a href="alianzas">Alianzas</a></li>
-                <li class=""><a href="#">Plazas</a></li>
+                <li class=""><a href="plazas">Plazas</a></li>
                 <li class=""><a href="#">Oficinas</a></li>
                 <li class=""><a href="#">Areas</a></li>
                 <li class=""><a href="#">Puestos</a></li>

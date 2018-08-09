@@ -6,13 +6,13 @@
 
 @endpush
 
-@section('title', 'Alianzas')
+@section('title', 'Plazas')
 
 @section('breadcrumb')
 
   @component('components.bread')
 
-  @slot('title', 'Alianzas')
+  @slot('title', 'Plazas')
   @slot('last_page', 'Dashboard')
 
   @endcomponent
@@ -26,11 +26,11 @@
   
   @if (isset($_GET['success']) && $_GET['success'] == 1)
     <div class="alert alert-success">
-      <p>Se ha creado la <b>alianza</b> satisfactoriamente</p>
+      <p>Se ha creado la <b>plaza</b> satisfactoriamente</p>
     </div>
   @elseif (isset($_GET['success']) && $_GET['success'] == 2)
     <div class="alert alert-success">
-      <p>Se ha actualizado la <b>alianza</b> satisfactoriamente</p>
+      <p>Se ha actualizado la <b>plaza</b> satisfactoriamente</p>
     </div>
   @elseif (isset($_GET['success']) && $_GET['success'] == 3)
     <div class="alert alert-success">
@@ -53,26 +53,28 @@
               <a href="javascript:void(0)" onclick="deleteAlianza()" class="btn btn-danger" title="Eliminar"><i class="mdi mdi-delete mdi-18px"></i></a>
               <br><br>
               <div class="table-responsive">
-                <table id="tableAlianzas" class="table table-bordered table-striped">
+                <table id="tablePlazas" class="table table-bordered table-striped">
                   <thead>
                   <tr>
                     <th></th>
                     <th>No.</th>
                     <th>ALIANZA</th>
+                    <th>PLAZA</th>
                     <th>TELEFONO</th>
                     <th>DIRECTOR</th>
                     <th>CORREO</th>
                   </tr>
                   </thead>
                   <tbody>
-                    @foreach ($alianzas as $i => $alianza)
+                    @foreach ($plazas as $i => $plaza)
                     <tr>
-                      <td><input type="checkbox" class="alianzas" value="{{ $alianza->id }}" id="id_{{ $alianza->id }}" name="ali[]"><label for="id_{{ $alianza->id }}"></label></td>
+                      <td><input type="checkbox" class="plazas" value="{{ $plaza->id }}" id="id_{{ $plaza->id }}" name="ali[]"><label for="id_{{ $plaza->id }}"></label></td>
                       <td>{{ $i+1 }}</td>
-                      <td>{{ $alianza->nombre }}</td>
-                      <td>{{ $alianza->telefono }}</td>
-                      <td>{{ $alianza->director }}</td>
-                      <td>{{ $alianza->correo }}</td>
+                      <td>{{ $plaza->alianza }}</td>
+                      <td>{{ $plaza->nombre }}</td>
+                      <td>{{ $plaza->telefono }}</td>
+                      <td>{{ $plaza->director }}</td>
+                      <td>{{ $plaza->correo }}</td>
                     </tr>
                     @endforeach
                   </tbody>
@@ -88,19 +90,32 @@
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="modalCrearAlianzaTitle">Nueva Alianza</h5>
+        <h5 class="modal-title" id="modalCrearAlianzaTitle">Nueva Plaza</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
       <div class="modal-body">
 
-           <form action="alianzas/crear" method="post" id="form_create_alianza">
+           <form action="plazas/crear" method="post" id="form_create_plaza">
              {{ csrf_field() }}
+
+             <div class="form-group">
+               <label for="estatus">Alianza</label>
+               <div class="input-group">
+                 <span class="input-group-addon"><i class="fa fa-handshake-o"></i></span>
+                 <select name="alianza" id="alianza" class="form-control">
+                  @foreach ($alianzas as $alianza)
+                   <option value="{{$alianza->id}}">{{$alianza->nombre}}</option>
+                  @endforeach
+                 </select>
+               </div>
+             </div>
+
              <div class="form-group @if ($errors->has('nombre')) has-error @endif">
               <div class="input-group">
-                 <span class="input-group-addon"><i class="fa fa-handshake-o"></i></span>
-                 <input type="text" class="form-control" name="nombre" placeholder="Nombre alianza (*)">
+                 <span class="input-group-addon"><i class="fa fa-cubes"></i></span>
+                 <input type="text" class="form-control" name="nombre" placeholder="Nombre plaza (*)">
               </div>
                  @if ($errors->has('nombre'))
                  <span class="help-block" style="color: #FC718B">
@@ -138,7 +153,7 @@
             <div class="form-group @if ($errors->has('director')) has-error @endif">
               <div class="input-group">
                 <span class="input-group-addon"><i class="fa fa-user"></i></span>
-                <input type="text" class="form-control" name="director" placeholder="Director alianza (*)">
+                <input type="text" class="form-control" name="director" placeholder="Director plaza (*)">
               </div>
                 @if ($errors->has('director'))
                 <span class="help-block" style="color: #FC718B">
@@ -162,7 +177,7 @@
             </div>
 
             <div class="form-group">
-              <label for="estatus">Alianza activa</label>
+              <label for="estatus">Plaza activa</label>
               <div class="input-group">
                 <span class="input-group-addon"><i class="fa fa-power-off"></i></span>
                 <select name="estatus" id="estatus" class="form-control">
@@ -176,7 +191,7 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-        <button type="button" onclick="crearAlianza()" class="btn btn-primary">Guardar</button>
+        <button type="button" onclick="crearPlaza()" class="btn btn-primary">Guardar</button>
       </div>
     </div>
   </div>
@@ -194,13 +209,26 @@
       </div>
       <div class="modal-body">
 
-           <form action="alianzas/editar" method="post" id="form_edit_alianza">
+           <form action="plazas/editar" method="post" id="form_edit_plaza">
              {{ csrf_field() }}
-             <input type="hidden" id="id_alianza" name="id_alianza">
+             <input type="hidden" id="id_plaza" name="id_plaza">
+
+             <div class="form-group">
+               <label for="estatus">Alianza</label>
+               <div class="input-group">
+                 <span class="input-group-addon"><i class="fa fa-handshake-o"></i></span>
+                 <select name="alianza" id="e_alianza" class="form-control">
+                  @foreach ($alianzas as $alianza)
+                   <option value="{{$alianza->id}}">{{$alianza->nombre}}</option>
+                  @endforeach
+                 </select>
+               </div>
+             </div>
+
              <div class="form-group @if ($errors->has('e_nombre')) has-error @endif">
               <div class="input-group">
                  <span class="input-group-addon"><i class="fa fa-handshake-o"></i></span>
-                 <input type="text" class="form-control" name="e_nombre" id="e_nombre" placeholder="Nombre alianza (*)">
+                 <input type="text" class="form-control" name="e_nombre" id="e_nombre" placeholder="Nombre plaza (*)">
               </div>
                  @if ($errors->has('e_nombre'))
                  <span class="help-block" style="color: #FC718B">
@@ -262,7 +290,7 @@
             </div>
 
             <div class="form-group">
-              <label for="estatus">Alianza activa</label>
+              <label for="estatus">Plaza activa</label>
               <div class="input-group">
                 <span class="input-group-addon"><i class="fa fa-power-off"></i></span>
                 <select name="estatus" id="estatus" class="form-control">
@@ -276,7 +304,7 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-        <button type="button" onclick="editAlianza()" class="btn btn-primary">Guardar</button>
+        <button type="button" onclick="editPlaza()" class="btn btn-primary">Guardar</button>
       </div>
     </div>
   </div>
@@ -289,8 +317,8 @@
 
 <script>
   $(document).ready(function(){
-    var $tableAlianzas = jQuery("#tableAlianzas");
-    var tableAlianzas = $tableAlianzas.DataTable( {
+    var $tablePlazas = jQuery("#tablePlazas");
+    var tablePlazas = $tablePlazas.DataTable( {
       "language": {
         "decimal":        "",
         "emptyTable":     "Sin registros",
@@ -329,26 +357,26 @@
     @endif
   });
 
-  function crearAlianza()
+  function crearPlaza()
   {
-    $('#form_create_alianza').submit();
+    $('#form_create_plaza').submit();
   }
 
-  function editAlianza()
+  function editPlaza()
   {
-    $('#form_edit_alianza').submit();
+    $('#form_edit_plaza').submit();
   }
 
   function editar()
   {
-    var count = $('.alianzas:checked').length;
+    var count = $('.plazas:checked').length;
     var param = '';
 
     if (count != 0 && count == 1) {
-      param = $('.alianzas:checked').val();
+      param = $('.plazas:checked').val();
 
       $.ajax({
-        url: 'alianzas/edit/'+param,
+        url: 'plazas/edit/'+param,
         type: 'GET',
         dataType: 'json',
         success: function(response){
@@ -357,7 +385,8 @@
 
             console.dir(response.data);
 
-            $('#id_alianza').val(response.data.id);
+            $('#id_plaza').val(response.data.id);
+            $('#e_alianza').val(response.data.alianza);
             $('#e_nombre').val(response.data.nombre);
             $('#e_domicilio').val(response.data.domicilio);
             $('#e_telefono').val(response.data.telefono);
@@ -384,17 +413,17 @@
 
   function deleteAlianza()
   {
-    var count = $('.alianzas:checked').length;
+    var count = $('.plazas:checked').length;
     var values = [];
 
     if (count > 0) {
-      $('.alianzas:checked').each(function (){
+      $('.plazas:checked').each(function (){
         values.push($(this).val());
       });
 
       swal({
         title: 'Estás seguro?',
-        text: "Se eliminarán las alianzas seleccionadas.",
+        text: "Se eliminarán las plazas seleccionadas.",
         type: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#3085d6',
@@ -412,7 +441,7 @@
           });
 
           $.ajax({
-            url: 'alianzas/delete',
+            url: 'plazas/delete',
             type: 'POST',
             dataType: 'json',
             data: {values: values},
@@ -420,7 +449,7 @@
               if (response.status == 200) {
                 swal(
                   'Exito!',
-                  'Han sido eliminadas las alianzas correctamente',
+                  'Han sido eliminadas las plazas correctamente',
                   'success'
                 );
                 setTimeout(function(){
@@ -449,7 +478,7 @@
     } else {
       swal(
         'Vacío',
-        'No has seleccionado ninguna alianza para eliminar',
+        'No has seleccionado ninguna plaza para eliminar',
         'info'
       );
     }

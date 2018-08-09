@@ -25,6 +25,12 @@ Route::post('/alianzas/editar', 'AlianzasController@editar');
 
 Route::post('/alianzas/delete', 'AlianzasController@delete');
 
+Route::get('/plazas', 'PlazasController@index');
+Route::post('/plazas/crear', 'PlazasController@create');
+Route::get('/plazas/edit/{id}', 'PlazasController@editView');
+Route::post('/plazas/editar', 'PlazasController@editar');
+Route::post('/plazas/delete', 'PlazasController@delete');
+
 # -------------- LOGIN ------------------------
 
 Route::post('/acceder', 'SiteController@acceder');
