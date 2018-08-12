@@ -184,6 +184,19 @@
                 <!-- Start Page Content -->
                 <!-- ============================================================== -->
                 <!-- Row -->
+
+                @if (Session::has('alert'))
+
+                <div class="row">
+                  <div class="col-xs-12 col-lg-6">
+                    <div class="alert alert-{{Session::get('alert')->type}}">
+                      <p>{{Session::get('alert')->body}}</p>
+                    </div>
+                  </div>
+                </div>
+
+                @endif
+
                 @yield('content')
                 <!-- ============================================================== -->
                 <!-- End PAge Content -->

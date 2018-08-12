@@ -13,7 +13,7 @@ class AlianzasController extends Controller
 
     	$alianzas = DB::select("SELECT * FROM alianzas");
 
-    	return view('alianzas.index', ["alianzas" => $alianzas]);
+    	return view('configuracion.alianzas.index', ["alianzas" => $alianzas]);
     }
 
     public function create(Request $request)
@@ -41,7 +41,8 @@ class AlianzasController extends Controller
         try {
         	DB::insert("INSERT INTO alianzas VALUES (null,?,?,?,?,?,?)", [$_POST['nombre'], $_POST['domicilio'], $_POST['telefono'], $_POST['director'], $_POST['correo'], $_POST['estatus']]);
         	DB::commit();
-        	return redirect('/alianzas?success=1');
+            \Helper::messageFlash('success', 'Alianzas', 'Se ha creado la alianza satisfactoriamente');
+        	return redirect('/alianzas');
         } catch (Exception $e) {
         	DB::rollback();
         	return dd($e);
@@ -96,10 +97,13 @@ class AlianzasController extends Controller
         try {
         	DB::update("UPDATE alianzas SET nombre=?, domicilio=?, telefono=?, director=?, correo=?, estatus=? WHERE id=?", [$_POST['e_nombre'], $_POST['e_domicilio'], $_POST['e_telefono'], $_POST['e_director'], $_POST['e_correo'], $_POST['estatus'], $_POST['id_alianza']]);
         	DB::commit();
-        	return redirect("/alianzas?success=2");
+
+            \Helper::messageFlash('success', 'Alianzas', 'Se ha editado la alianza satisfactoriamente');
+        	return redirect("/alianzas");
         } catch (Exception $e) {
         	DB::rollback();
-        	return dd($e);
+        	\Helper::messageFlash('danger', 'Alianzas', 'Ha ocurrido un error inesperado. Vuelva a intentarlo por favor');
+            return redirect("/alianzas");
         }
     }
 

@@ -14,7 +14,7 @@ class PlazasController extends Controller
     	$plazas = DB::select("SELECT a.nombre AS alianza, p.* FROM plazas p INNER JOIN alianzas a ON p.id_alianza=a.id");
         $alianzas = DB::select("SELECT id, nombre FROM alianzas");
 
-    	return view('plazas.index', ["plazas" => $plazas, "alianzas" => $alianzas]);
+    	return view('configuracion.plazas.index', ["plazas" => $plazas, "alianzas" => $alianzas]);
     }
 
     public function create(Request $request)
@@ -42,10 +42,12 @@ class PlazasController extends Controller
         try {
         	DB::insert("INSERT INTO plazas VALUES (null,?,?,?,?,?,?,?,null)", [$_POST['alianza'], $_POST['nombre'], $_POST['domicilio'], $_POST['telefono'], $_POST['director'], $_POST['correo'], $_POST['estatus']]);
         	DB::commit();
-        	return redirect('/plazas?success=1');
+            \Helper::messageFlash('success', 'Plazas', 'Se ha editado la plaza satisfactoriamente');
+            return redirect("/plazas");
         } catch (Exception $e) {
         	DB::rollback();
-        	return dd($e);
+        	\Helper::messageFlash('danger', 'Plazas', 'Ha ocurrido un error inesperado. Vuelva a intentarlo por favor');
+            return redirect("/plazas");
         }
 
         
@@ -97,10 +99,12 @@ class PlazasController extends Controller
         try {
         	DB::update("UPDATE plazas SET id_alianza=?, nombre=?, domicilio=?, telefono=?, director=?, correo=?, estatus=? WHERE id=?", [$_POST['alianza'], $_POST['e_nombre'], $_POST['e_domicilio'], $_POST['e_telefono'], $_POST['e_director'], $_POST['e_correo'], $_POST['estatus'], $_POST['id_plaza']]);
         	DB::commit();
-        	return redirect("/plazas?success=2");
+        	\Helper::messageFlash('success', 'Plazas', 'Se ha editado la plaza satisfactoriamente');
+            return redirect("/plazas");
         } catch (Exception $e) {
         	DB::rollback();
-        	return dd($e);
+        	\Helper::messageFlash('danger', 'Plazas', 'Ha ocurrido un error inesperado. Vuelva a intentarlo por favor');
+            return redirect("/plazas");
         }
     }
 

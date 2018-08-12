@@ -22,35 +22,12 @@
 @section('content')
 
 <div class="row">
-  <div class="col-xs-12 col-lg-6">
-  
-  @if (isset($_GET['success']) && $_GET['success'] == 1)
-    <div class="alert alert-success">
-      <p>Se ha creado la <b>plaza</b> satisfactoriamente</p>
-    </div>
-  @elseif (isset($_GET['success']) && $_GET['success'] == 2)
-    <div class="alert alert-success">
-      <p>Se ha actualizado la <b>plaza</b> satisfactoriamente</p>
-    </div>
-  @elseif (isset($_GET['success']) && $_GET['success'] == 3)
-    <div class="alert alert-success">
-      <p>Se ha creado el <b>trabajador</b> satisfactoriamente.</p>
-    </div>
-  @elseif (isset($_GET['success']) && $_GET['success'] == 4)
-    <div class="alert alert-success">
-      <p>Se ha actualizado el <b>trabajador</b> satisfactoriamente.</p>
-    </div>
-  @endif
-  </div>
-</div>
-
-<div class="row">
   <div class="col-lg-12 col-md-12">
       <div class="card">
           <div class="card-body">
               <a href="javascript:void(0)" class="btn btn-primary" title="Agregar" data-toggle="modal" data-target="#modalCrearAlianza"><i class="mdi mdi-plus-box mdi-18px"></i></a>&nbsp;
               <a href="javascript:void(0)" onclick="editar()" class="btn btn-success" title="Editar"><i class="mdi mdi-pencil-box mdi-18px"></i></a>&nbsp;
-              <a href="javascript:void(0)" onclick="deleteAlianza()" class="btn btn-danger" title="Eliminar"><i class="mdi mdi-delete mdi-18px"></i></a>
+              <a href="javascript:void(0)" onclick="deletePlaza()" class="btn btn-danger" title="Eliminar"><i class="mdi mdi-delete mdi-18px"></i></a>
               <br><br>
               <div class="table-responsive">
                 <table id="tablePlazas" class="table table-bordered table-striped">
@@ -411,7 +388,7 @@
     }
   }
 
-  function deleteAlianza()
+  function deletePlaza()
   {
     var count = $('.plazas:checked').length;
     var values = [];

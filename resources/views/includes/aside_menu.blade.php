@@ -6,9 +6,9 @@
             <ul aria-expanded="false" class="collapse">
                 <li class=""><a href="alianzas">Alianzas</a></li>
                 <li class=""><a href="plazas">Plazas</a></li>
-                <li class=""><a href="#">Oficinas</a></li>
-                <li class=""><a href="#">Areas</a></li>
-                <li class=""><a href="#">Puestos</a></li>
+                <li class=""><a href="oficinas">Oficinas</a></li>
+                <li class=""><a href="areas">Areas</a></li>
+                <li class=""><a href="puestos">Puestos</a></li>
                 <li class=""><a href="#">Usuarios</a></li>
                 <li class=""><a href="#">Permisos</a></li>
                 <li class=""><a href="#">Accesos</a></li>

@@ -15,21 +15,57 @@
 
 Route::get('/', 'SiteController@home');
 
+########### CONFIGURACIÓN - ALIANZAS ##################
+
 Route::get('/alianzas', 'AlianzasController@index');
-
-Route::get('/alianzas/create', function (){ return view('alianzas.create'); });
 Route::post('/alianzas/crear', 'AlianzasController@create');
-
 Route::get('/alianzas/edit/{id}', 'AlianzasController@editView')->where(['id' => '[0-9]+']);
 Route::post('/alianzas/editar', 'AlianzasController@editar');
-
 Route::post('/alianzas/delete', 'AlianzasController@delete');
+
+####################### FIN ############################
+
+########### CONFIGURACIÓN - PLAZAS ##################
 
 Route::get('/plazas', 'PlazasController@index');
 Route::post('/plazas/crear', 'PlazasController@create');
-Route::get('/plazas/edit/{id}', 'PlazasController@editView');
+Route::get('/plazas/edit/{id}', 'PlazasController@editView')->where(['id' => '[0-9]+']);
 Route::post('/plazas/editar', 'PlazasController@editar');
 Route::post('/plazas/delete', 'PlazasController@delete');
+
+####################### FIN ############################
+
+########### CONFIGURACIÓN - OFICINAS ##################
+
+Route::get('/oficinas', 'OficinasController@index');
+Route::post('/oficinas/crear', 'OficinasController@create');
+Route::get('/oficinas/edit/{id}', 'OficinasController@editView')->where(['id' => '[0-9]+']);
+Route::post('/oficinas/editar', 'OficinasController@editar');
+Route::post('/oficinas/delete', 'OficinasController@delete');
+Route::get('/oficinas/getPlazas', 'OficinasController@getPlazas');
+
+####################### FIN ############################
+
+########### CONFIGURACIÓN - AREAS ##################
+
+Route::get('/areas', 'AreasController@index');
+Route::post('/areas/crear', 'AreasController@create');
+Route::get('/areas/edit/{id}', 'AreasController@editView')->where(['id' => '[0-9]+']);
+Route::post('/areas/editar', 'AreasController@editar');
+Route::post('/areas/delete', 'AreasController@delete');
+
+####################### FIN ############################
+
+########### CONFIGURACIÓN - AREAS ##################
+
+Route::get('/puestos', 'PuestosController@index');
+Route::post('/puestos/crear', 'PuestosController@create');
+Route::get('/puestos/edit/{id}', 'PuestosController@editView')->where(['id' => '[0-9]+']);
+Route::post('/puestos/editar', 'PuestosController@editar');
+Route::post('/puestos/delete', 'PuestosController@delete');
+
+####################### FIN ############################
+
 
 # -------------- LOGIN ------------------------
 
