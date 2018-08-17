@@ -56,13 +56,24 @@ Route::post('/areas/delete', 'AreasController@delete');
 
 ####################### FIN ############################
 
-########### CONFIGURACIÓN - AREAS ##################
+########### CONFIGURACIÓN - PUESTOS ##################
 
 Route::get('/puestos', 'PuestosController@index');
 Route::post('/puestos/crear', 'PuestosController@create');
 Route::get('/puestos/edit/{id}', 'PuestosController@editView')->where(['id' => '[0-9]+']);
 Route::post('/puestos/editar', 'PuestosController@editar');
 Route::post('/puestos/delete', 'PuestosController@delete');
+
+####################### FIN ############################
+
+########### CONFIGURACIÓN - USUARIOS ##################
+
+Route::get('/usuarios', 'UsuariosController@index');
+Route::post('/usuarios/crear', 'UsuariosController@create');
+Route::get('/usuarios/edit/{id}', 'UsuariosController@editView')->where(['id' => '[0-9]+']);
+Route::post('/usuarios/editar', 'UsuariosController@editar');
+Route::post('/usuarios/delete', 'UsuariosController@delete');
+Route::get('/usuarios/getInfo/{accion}/{id}', 'UsuariosController@getInfo');
 
 ####################### FIN ############################
 
