@@ -72,6 +72,7 @@ Route::get('/usuarios', 'UsuariosController@index');
 Route::post('/usuarios/crear', 'UsuariosController@create');
 Route::get('/usuarios/edit/{id}', 'UsuariosController@editView')->where(['id' => '[0-9]+']);
 Route::post('/usuarios/editar', 'UsuariosController@editar');
+Route::post('/usuarios/editarPass', 'UsuariosController@editarPass');
 Route::post('/usuarios/delete', 'UsuariosController@delete');
 Route::get('/usuarios/getInfo/{accion}/{id}', 'UsuariosController@getInfo');
 

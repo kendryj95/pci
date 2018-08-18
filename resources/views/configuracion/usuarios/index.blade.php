@@ -28,6 +28,7 @@
               <a href="javascript:void(0)" class="btn btn-primary" title="Agregar" data-toggle="modal" data-target="#modalCrearUsuarios"><i class="mdi mdi-plus-box mdi-18px"></i></a>&nbsp;
               <a href="javascript:void(0)" onclick="editar()" class="btn btn-success" title="Editar"><i class="mdi mdi-pencil-box mdi-18px"></i></a>&nbsp;
               <a href="javascript:void(0)" onclick="deleteUsuario()" class="btn btn-danger" title="Eliminar"><i class="mdi mdi-delete mdi-18px"></i></a>
+              <a href="javascript:void(0)" onclick="editarPass()" class="btn btn-info" title="Editar contraseña"><i class="mdi mdi-key mdi-18px"></i></a>
               <br><br>
               <div class="table-responsive">
                 <table id="tableUsuarios" class="table table-bordered table-striped">
@@ -341,6 +342,72 @@
   </div>
 </div>
 
+<!-- Modal -->
+<div class="modal fade" id="modalEditPassUsuarios" tabindex="-1" role="dialog" aria-labelledby="modalEditPassUsuariosTitle" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalEditPassUsuariosTitle">Editar contraseña</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+
+           <form action="usuarios/editarPass" method="post" id="form_editpass_usuario">
+             {{ csrf_field() }}
+             <input type="hidden" id="id_usuario_pass" name="id_usuario_pass">
+
+             <div class="form-group">
+               <label for="pass_act">Contraseña actual</label>
+               <div class="input-group">
+                 <span class="input-group-addon"><i class="fa fa-lock"></i></span>
+                 <input type="password" name="pass_act" id="pass_act" class="form-control" placeholder="***********">
+               </div>
+               @if ($errors->has('pass_act'))
+                 <span class="help-block" style="color: #FC718B">
+                  <i class="fa fa-times-circle-o"></i> {{ $errors->get('pass_act')[0] }}
+                 </span>
+                 @endif
+             </div>
+
+             <div class="form-group">
+               <label for="pass_new">Nueva contraseña</label>
+               <div class="input-group">
+                 <span class="input-group-addon"><i class="fa fa-key"></i></span>
+                 <input type="password" class="form-control" name="pass_new" id="pass_new" placeholder="***********">
+               </div>
+               @if ($errors->has('pass_new'))
+                 <span class="help-block" style="color: #FC718B">
+                  <i class="fa fa-times-circle-o"></i> {{ $errors->get('pass_new')[0] }}
+                 </span>
+                 @endif
+             </div>
+
+             <div class="form-group">
+               <label for="pass_new_conf">Confirmar nueva contraseña</label>
+               <div class="input-group">
+                 <span class="input-group-addon"><i class="fa fa-key"></i></span>
+                 <input type="password" class="form-control" name="pass_new_conf" id="pass_new_conf" placeholder="***********">
+               </div>
+               @if ($errors->has('pass_new_conf'))
+                 <span class="help-block" style="color: #FC718B">
+                  <i class="fa fa-times-circle-o"></i> {{ $errors->get('pass_new_conf')[0] }}
+                 </span>
+                 @endif
+             </div>
+            
+           </form>
+        
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+        <button type="button" onclick="editPassUsuario()" class="btn btn-primary">Guardar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 
 @endsection
 
@@ -385,6 +452,10 @@
 
     $('#modalEditUsuarios').modal('show');
 
+    @elseif ($errors->has('pass_act') || $errors->has('pass_new') || $errors->has('pass_new_conf'))
+
+    $('#modalEditPassUsuarios').modal('show');
+
     @endif
   });
 
@@ -396,6 +467,11 @@
   function editUsuario()
   {
     $('#form_edit_usuario').submit();
+  }
+
+  function editPassUsuario()
+  {
+    $('#form_editpass_usuario').submit();    
   }
 
   function editar()
@@ -451,6 +527,25 @@
           console.log('Error');
         }
       });
+      
+    } else if (count == 0) {
+      swal('Vacío', 'No has seleccionado ninguna usuario para editar', 'info');
+    } else {
+      swal('Warning','No puedes seleccionar más de 1 usuario para editar', 'warning');
+    }
+  }
+
+  function editarPass()
+  {
+    var count = $('.usuarios:checked').length;
+    var param = '';
+
+    if (count != 0 && count == 1) {
+      param = $('.usuarios:checked').val();
+
+      $('#id_usuario_pass').val(param);
+
+      $('#modalEditPassUsuarios').modal('show');
       
     } else if (count == 0) {
       swal('Vacío', 'No has seleccionado ninguna usuario para editar', 'info');
