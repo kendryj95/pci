@@ -29,6 +29,7 @@
               <a href="javascript:void(0)" onclick="editar()" class="btn btn-success" title="Editar"><i class="mdi mdi-pencil-box mdi-18px"></i></a>&nbsp;
               <a href="javascript:void(0)" onclick="deleteUsuario()" class="btn btn-danger" title="Eliminar"><i class="mdi mdi-delete mdi-18px"></i></a>
               <a href="javascript:void(0)" onclick="editarPass()" class="btn btn-info" title="Editar contraseña"><i class="mdi mdi-key mdi-18px"></i></a>
+              <a href="javascript:void(0)" onclick="asigPerfil()" class="btn btn-secondary" title="Perfiles, Permisos y Acessos"><i class="mdi mdi-security mdi-18px"></i></a>
               <br><br>
               <div class="table-responsive">
                 <table id="tableUsuarios" class="table table-bordered table-striped">
@@ -408,6 +409,90 @@
   </div>
 </div>
 
+<!-- Modal -->
+<div class="modal fade" id="modalAsigPerfilUsuarios" tabindex="-1" role="dialog" aria-labelledby="modalAsigPerfilUsuariosTitle" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalAsigPerfilUsuariosTitle">Editar contraseña</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+
+         <form action="#!" method="post">
+          {{ csrf_field() }}
+          <input type="hidden" class="id_usuario_perfil" name="id_usuario_perfil">
+           <div class="form-group">
+             <label for="pass_act">Perfil de usuario</label>
+             <div class="input-group">
+               <span class="input-group-addon"><i class="mdi mdi-account-star-variant mdi-18px"></i></span>
+               <select name="perfil" id="" class="form-control">
+                 <option value="">Selecciona un perfil</option>
+               </select>
+             </div>
+             @if ($errors->has('perfil'))
+               <span class="help-block" style="color: #FC718B">
+                <i class="fa fa-times-circle-o"></i> {{ $errors->get('perfil')[0] }}
+               </span>
+               @endif
+           
+           </div>
+          
+           <button type="submit" class="btn btn-info">Asignar perfil</button><br>
+         </form>
+
+         <form action="#!" method="post">
+          {{ csrf_field() }}
+          <input type="hidden" class="id_usuario_perfil" name="id_usuario_perfil">
+           <div class="form-group">
+             <label for="pass_new">Usuario</label>
+             <div class="input-group">
+               <span class="input-group-addon"><i class="mdi mdi-security-network mdi-18px"></i></span>
+               <select name="permisos" id="" class="form-control">
+                 <option value="">Selecciona un usuario</option>
+               </select>
+             </div>
+             @if ($errors->has('permisos'))
+               <span class="help-block" style="color: #FC718B">
+                <i class="fa fa-times-circle-o"></i> {{ $errors->get('permisos')[0] }}
+               </span>
+               @endif
+           </div>
+
+           <button type="submit" class="btn btn-info">Clonar permisos</button><br>
+         </form>
+
+         <form action="#!" method="post">
+          {{ csrf_field() }}
+          <input type="hidden" class="id_usuario_perfil" name="id_usuario_perfil">
+           <div class="form-group">
+             <label for="pass_new_conf">Usuario</label>
+             <div class="input-group">
+               <span class="input-group-addon"><i class="mdi mdi-account-key mdi-18px"></i></span>
+               <select name="accesos" id="" class="form-control">
+                 <option value="">Selecciona un usuario</option>
+               </select>
+             </div>
+             @if ($errors->has('accesos'))
+               <span class="help-block" style="color: #FC718B">
+                <i class="fa fa-times-circle-o"></i> {{ $errors->get('accesos')[0] }}
+               </span>
+               @endif
+           </div>
+
+           <button type="submit" class="btn btn-info">Clonar accesos</button><br>
+         </form>
+        
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-danger" data-dismiss="modal">Cerrar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 
 @endsection
 
@@ -546,6 +631,25 @@
       $('#id_usuario_pass').val(param);
 
       $('#modalEditPassUsuarios').modal('show');
+      
+    } else if (count == 0) {
+      swal('Vacío', 'No has seleccionado ninguna usuario para editar', 'info');
+    } else {
+      swal('Warning','No puedes seleccionar más de 1 usuario para editar', 'warning');
+    }
+  }
+
+  function asigPerfil()
+  {
+    var count = $('.usuarios:checked').length;
+    var param = '';
+
+    if (count != 0 && count == 1) {
+      param = $('.usuarios:checked').val();
+
+      $('.id_usuario_perfil').val(param);
+
+      $('#modalAsigPerfilUsuarios').modal('show');
       
     } else if (count == 0) {
       swal('Vacío', 'No has seleccionado ninguna usuario para editar', 'info');

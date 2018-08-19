@@ -11,7 +11,7 @@ class UsuariosController extends Controller
     public function index()
     {
 
-    	$usuarios = DB::select("SELECT u.id, u.usuario, u.correo, IF(u.estatus=1,'Sí','No') AS estatus, a.area, p.puesto FROM usuarios u INNER JOIN areas a ON u.id_area=a.id INNER JOIN puestos p ON u.id_puesto=p.id");
+    	$usuarios = DB::select("SELECT u.id, u.usuario, u.correo, IF(u.estatus=1,'Sí','No') AS estatus, a.area, p.puesto FROM usuarios u INNER JOIN areas a ON u.id_area=a.id INNER JOIN puestos p ON u.id_puesto=p.id WHERE u.usuario <> 'admin'");
 
         $alianzas = DB::select("SELECT id, nombre FROM alianzas");
         $areas = DB::select("SELECT id, area FROM areas");

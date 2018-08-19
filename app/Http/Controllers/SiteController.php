@@ -22,30 +22,30 @@ class SiteController extends Controller
     public function acceder(Request $request)
     {
 
-    	$sql = "SELECT * FROM admins WHERE usuario=:usuario AND password=:password";
+        $this->validate($request, [
+            'usuario' => 'required',
+            'pass' => 'required',
+        ],
+        [
+            'usuario.required' => 'Usuario es un campo obligatorio, no puede quedar vacío.',
+            'pass.required' => 'Contraseña es un campo obligatorio, no puede quedar vacío.',
+        ]);
 
-    	$result = DB::select($sql, ['usuario' => $_REQUEST['user'], 'password' => md5($_REQUEST['pass'])]);
+        $user = DB::select("SELECT id, usuario, correo, password FROM usuarios WHERE usuario=?", [$request->usuario]);
 
-    	if ($result) {
-	            $request->session()->put('nombre', $result[0]->nombres . ' ' . $result[0]->apellidos);
-	            $request->session()->put('rol', 'A');
+        if ($user) {
+            if (\Hash::check($request->pass, $user[0]->password)) {
+                $request->session()->put('user_id', $user[0]->id);
+                $request->session()->put('user_name', $user[0]->usuario);
+                $request->session()->put('user_correo', $user[0]->correo);
 
-	            return redirect('/dashboard');
-    	} else {
-    		$sql = "SELECT * FROM login l INNER JOIN trabajadores t ON l.id_asoc=t.id_trabajador WHERE l.usuario=:usuario AND l.password=:password";
-
-    		$result = DB::select($sql, ['usuario' => $_REQUEST['user'], 'password' => md5($_REQUEST['pass'])]);
-
-    		if ($result) {
-    			$request->session()->put('nombre', $result[0]->nombres . ' ' . $result[0]->apellidos);
-    			$request->session()->put('rol', 'T');
-
-    			return redirect('/dashboard');
-    		} else {
-    			return redirect('/?error=1');
-    		}
-    	}
-
+                return redirect('/');
+            } else {
+                return redirect()->back()->withErrors(['Contraseña incorrecta.']);
+            }
+        } else {
+            return redirect()->back()->withErrors(['Usuario no registrado.']);
+        }
 
     }
 
@@ -53,6 +53,6 @@ class SiteController extends Controller
 	{
 		$request->session()->flush();
 		   
-        return redirect('/');
+        return redirect('/login');
 	}
 }

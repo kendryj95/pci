@@ -16,9 +16,9 @@ class md_guard_login
     public function handle($request, Closure $next)
     {
 
-        if ($request->session()->get('nombre')==null)
+        if ($request->session()->get('user_name')==null)
         {
-            return redirect('/');            
+            return redirect('/login');            
         } else 
          
          return $next($request);
