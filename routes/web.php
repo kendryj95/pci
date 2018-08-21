@@ -83,4 +83,14 @@ Route::group(['middleware' =>'login'], function () {
 	Route::get('/usuarios/getInfo/{accion}/{id}', 'UsuariosController@getInfo');
 
 	####################### FIN ############################
+
+	Route::get('/permisos', 'PermisosController@index');
+	Route::post('/permisos/crear', 'PermisosController@store');
+	Route::get('/permisos/edit/{id}', 'PermisosController@editView')->where(['id' => '[0-9]+']);
+	Route::post('/permisos/editar', 'PermisosController@editar');
+	Route::post('/permisos/editarPass', 'PermisosController@editarPass');
+	Route::post('/permisos/delete', 'PermisosController@delete');
+	Route::get('/permisos/getInfo/{accion}/{id}', 'PermisosController@getInfo');
+
+	####################### FIN ############################
 });

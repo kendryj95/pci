@@ -10,7 +10,7 @@
                 <li class=""><a href="areas">Areas</a></li>
                 <li class=""><a href="puestos">Puestos</a></li>
                 <li class=""><a href="usuarios">Usuarios</a></li>
-                <li class=""><a href="#">Permisos</a></li>
+                <li class=""><a href="permisos">Permisos</a></li>
                 <li class=""><a href="#">Accesos</a></li>
                 <li class=""><a href="#">Perfiles de usuarios</a></li>
             </ul>
