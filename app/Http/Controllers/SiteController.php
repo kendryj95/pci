@@ -23,15 +23,15 @@ class SiteController extends Controller
     {
 
         $this->validate($request, [
-            'usuario' => 'required',
+            'correo' => 'required',
             'pass' => 'required',
         ],
         [
-            'usuario.required' => 'Usuario es un campo obligatorio, no puede quedar vacío.',
+            'correo.required' => 'Usuario es un campo obligatorio, no puede quedar vacío.',
             'pass.required' => 'Contraseña es un campo obligatorio, no puede quedar vacío.',
         ]);
 
-        $user = DB::select("SELECT id, usuario, correo, password FROM usuarios WHERE usuario=?", [$request->usuario]);
+        $user = DB::select("SELECT id, usuario, correo, password FROM usuarios WHERE correo=?", [$request->correo]);
 
         if ($user) {
             if (\Hash::check($request->pass, $user[0]->password)) {

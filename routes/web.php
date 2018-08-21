@@ -91,6 +91,8 @@ Route::group(['middleware' =>'login'], function () {
 	Route::post('/permisos/editarPass', 'PermisosController@editarPass');
 	Route::post('/permisos/delete', 'PermisosController@delete');
 	Route::get('/permisos/getInfo/{accion}/{id}', 'PermisosController@getInfo');
+	Route::get('/permisos/getPermUsuario/{id}', 'PermisosController@getPermUsuario');
+	Route::get('/permisos/validarPerm/{id_accion}/{id_usuario}', 'PermisosController@validar_permiso');
 
 	####################### FIN ############################
 });

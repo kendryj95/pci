@@ -290,6 +290,7 @@
     <script src="{{ asset('assets/plugins/sweetalert2/sweetalert2.min.js')}}"></script>
 
     <script src="{{ asset('assets/plugins/datatables/jquery.dataTables.min.js')}}"></script>
+    <script src="{{asset('assets/js/scripts.js')}}"></script>
 
     @stack('scripts')
 </body>

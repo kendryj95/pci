@@ -54,7 +54,7 @@
                     {{csrf_field()}}
                     <div class="form-group ">
                         <div class="col-xs-12">
-                            <input class="form-control" type="text" name="usuario" placeholder="Usuario"> </div>
+                            <input class="form-control" type="text" name="correo" placeholder="Correo"> </div>
                     </div>
                     <div class="form-group">
                         <div class="col-xs-12">

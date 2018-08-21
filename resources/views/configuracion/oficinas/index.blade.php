@@ -25,7 +25,7 @@
   <div class="col-lg-12 col-md-12">
       <div class="card">
           <div class="card-body">
-              <a href="javascript:void(0)" class="btn btn-primary" title="Agregar" data-toggle="modal" data-target="#modalCrearOficina"><i class="mdi mdi-plus-box mdi-18px"></i></a>&nbsp;
+              <a href="javascript:void(0)" onclick="crear()" class="btn btn-primary" title="Agregar"><i class="mdi mdi-plus-box mdi-18px"></i></a>&nbsp;
               <a href="javascript:void(0)" onclick="editar()" class="btn btn-success" title="Editar"><i class="mdi mdi-pencil-box mdi-18px"></i></a>&nbsp;
               <a href="javascript:void(0)" onclick="deleteOficina()" class="btn btn-danger" title="Eliminar"><i class="mdi mdi-delete mdi-18px"></i></a>
               <br><br>
@@ -333,6 +333,7 @@
 @push('scripts')
 
 <script>
+  const id_usuario = {{session()->get('user_id')}};
   $(document).ready(function(){
     var $tableOficinas = jQuery("#tableOficinas");
     var tableOficinas = $tableOficinas.DataTable( {
@@ -374,6 +375,30 @@
     @endif
   });
 
+  function crear()
+  {
+    const id_accion = 7;
+
+    $.ajax({
+      url: "permisos/validarPerm/"+id_accion+"/"+id_usuario,
+      type: 'GET',
+      dataType: 'json',
+      success:function (response) {
+        if (response.permiso) {
+          $('#modalCrearOficina').modal('show');
+        } else {
+          swal(
+            'Permiso',
+            'No tienes permiso para realizar esta accion.',
+            'error'
+            );
+        }
+      }
+    });
+
+
+  }
+
   function crearOficina()
   {
     $('#form_create_oficina').submit();
@@ -389,52 +414,71 @@
     var count = $('.oficinas:checked').length;
     var param = '';
 
-    if (count != 0 && count == 1) {
-      param = $('.oficinas:checked').val();
+    const id_accion = 8;
 
-      $.ajax({
-        url: 'oficinas/edit/'+param,
-        type: 'GET',
-        dataType: 'json',
-        success: function(response){
+    $.ajax({
+      url: "permisos/validarPerm/"+id_accion+"/"+id_usuario,
+      type: 'GET',
+      dataType: 'json',
+      success:function (response) {
+        if (response.permiso) {
+          
+          if (count != 0 && count == 1) {
+            param = $('.oficinas:checked').val();
 
-          if (response.status == 200) {
+            $.ajax({
+              url: 'oficinas/edit/'+param,
+              type: 'GET',
+              dataType: 'json',
+              success: function(response){
 
-            console.dir(response.data);
+                if (response.status == 200) {
 
-            let html_plazas = '<option value="">Seleccionar</option>';
+                  console.dir(response.data);
 
-            response.plazas.forEach(function(p){
-              let selected = response.data.id_plaza == p.id ? 'selected' : '';
-              html_plazas += '<option value="'+p.id+'" '+selected+'>'+p.nombre+'</option>';
+                  let html_plazas = '<option value="">Seleccionar</option>';
+
+                  response.plazas.forEach(function(p){
+                    let selected = response.data.id_plaza == p.id ? 'selected' : '';
+                    html_plazas += '<option value="'+p.id+'" '+selected+'>'+p.nombre+'</option>';
+                  });
+
+                  $('#e_plaza').html(html_plazas);
+
+                  $('#id_oficina').val(response.data.id);
+                  $('#e_alianza').val(response.data.alianza);
+                  $('#e_nombre').val(response.data.oficina);
+                  $('#e_domicilio').val(response.data.domicilio);
+                  $('#e_telefono').val(response.data.telefono);
+                  $('#e_director').val(response.data.director);
+                  $('#e_correo').val(response.data.correo);
+                  $('#estatus').val(response.data.estatus);
+
+                  $('#modalEditOficina').modal('show');
+                } else {
+                  console.log('Error');
+                }
+              },
+              error: function (error) {
+                console.log('Error');
+              }
             });
-
-            $('#e_plaza').html(html_plazas);
-
-            $('#id_oficina').val(response.data.id);
-            $('#e_alianza').val(response.data.alianza);
-            $('#e_nombre').val(response.data.oficina);
-            $('#e_domicilio').val(response.data.domicilio);
-            $('#e_telefono').val(response.data.telefono);
-            $('#e_director').val(response.data.director);
-            $('#e_correo').val(response.data.correo);
-            $('#estatus').val(response.data.estatus);
-
-            $('#modalEditOficina').modal('show');
+            
+          } else if (count == 0) {
+            swal('Vacío', 'No has seleccionado ninguna oficina para editar', 'info');
           } else {
-            console.log('Error');
+            swal('Warning','No puedes seleccionar más de 1 oficina para editar', 'warning');
           }
-        },
-        error: function (error) {
-          console.log('Error');
+        } else {
+          swal(
+            'Permiso',
+            'No tienes permiso para realizar esta accion.',
+            'error'
+            );
         }
-      });
-      
-    } else if (count == 0) {
-      swal('Vacío', 'No has seleccionado ninguna oficina para editar', 'info');
-    } else {
-      swal('Warning','No puedes seleccionar más de 1 oficina para editar', 'warning');
-    }
+      }
+    });
+
   }
 
   function deleteOficina()
@@ -442,72 +486,89 @@
     var count = $('.oficinas:checked').length;
     var values = [];
 
-    if (count > 0) {
-      $('.oficinas:checked').each(function (){
-        values.push($(this).val());
-      });
+    const id_accion = 9;
 
-      swal({
-        title: 'Estás seguro?',
-        text: "Se eliminarán las oficinas seleccionadas.",
-        type: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'Sí, borrar!',
-        cancelButtonText: 'Cancelar'
-      }).then((result) => {
-        
-        if (result) {
+    $.ajax({
+      url: "permisos/validarPerm/"+id_accion+"/"+id_usuario,
+      type: 'GET',
+      dataType: 'json',
+      success:function (response) {
+        if (response.permiso) {
+          if (count > 0) {
+            $('.oficinas:checked').each(function (){
+              values.push($(this).val());
+            });
 
-          $.ajaxSetup({
-            headers: {
-            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            }
-          });
+            swal({
+              title: 'Estás seguro?',
+              text: "Se eliminarán las oficinas seleccionadas.",
+              type: 'warning',
+              showCancelButton: true,
+              confirmButtonColor: '#3085d6',
+              cancelButtonColor: '#d33',
+              confirmButtonText: 'Sí, borrar!',
+              cancelButtonText: 'Cancelar'
+            }).then((result) => {
+              
+              if (result) {
 
-          $.ajax({
-            url: 'oficinas/delete',
-            type: 'POST',
-            dataType: 'json',
-            data: {values: values},
-            success: function(response) {
-              if (response.status == 200) {
-                swal(
-                  'Exito!',
-                  'Han sido eliminadas las oficinas correctamente',
-                  'success'
-                );
-                setTimeout(function(){
-                  window.location.reload();
-                }, 2000);
-              } else {
-                swal(
-                  'Error!',
-                  'Lo sentimos, ha ocurrido un error inesperado.',
-                  'error'
-                );
+                $.ajaxSetup({
+                  headers: {
+                  'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                  }
+                });
+
+                $.ajax({
+                  url: 'oficinas/delete',
+                  type: 'POST',
+                  dataType: 'json',
+                  data: {values: values},
+                  success: function(response) {
+                    if (response.status == 200) {
+                      swal(
+                        'Exito!',
+                        'Han sido eliminadas las oficinas correctamente',
+                        'success'
+                      );
+                      setTimeout(function(){
+                        window.location.reload();
+                      }, 2000);
+                    } else {
+                      swal(
+                        'Error!',
+                        'Lo sentimos, ha ocurrido un error inesperado.',
+                        'error'
+                      );
+                    }
+                  },
+                  error: function(error) {
+                      console.dir(error);
+                      swal(
+                        'Error!',
+                        'Lo sentimos, ha ocurrido un error inesperado.',
+                        'error'
+                      );
+                  }
+                });
+                
               }
-            },
-            error: function(error) {
-                console.dir(error);
-                swal(
-                  'Error!',
-                  'Lo sentimos, ha ocurrido un error inesperado.',
-                  'error'
-                );
-            }
-          });
-          
+            });
+          } else {
+            swal(
+              'Vacío',
+              'No has seleccionado ninguna plaza para eliminar',
+              'info'
+            );
+          }
+        } else {
+          swal(
+            'Permiso',
+            'No tienes permiso para realizar esta accion.',
+            'error'
+            );
         }
-      });
-    } else {
-      swal(
-        'Vacío',
-        'No has seleccionado ninguna plaza para eliminar',
-        'info'
-      );
-    }
+      }
+    });
   }
 
   function getPlazas(value)

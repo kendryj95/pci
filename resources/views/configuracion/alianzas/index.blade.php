@@ -25,7 +25,7 @@
   <div class="col-lg-12 col-md-12">
       <div class="card">
           <div class="card-body">
-              <a href="javascript:void(0)" class="btn btn-primary" title="Agregar" data-toggle="modal" data-target="#modalCrearAlianza"><i class="mdi mdi-plus-box mdi-18px"></i></a>&nbsp;
+              <a href="javascript:void(0)" onclick="crear()" class="btn btn-primary" title="Agregar"><i class="mdi mdi-plus-box mdi-18px"></i></a>&nbsp;
               <a href="javascript:void(0)" onclick="editar()" class="btn btn-success" title="Editar"><i class="mdi mdi-pencil-box mdi-18px"></i></a>&nbsp;
               <a href="javascript:void(0)" onclick="deleteAlianza()" class="btn btn-danger" title="Eliminar"><i class="mdi mdi-delete mdi-18px"></i></a>
               <br><br>
@@ -265,6 +265,7 @@
 @push('scripts')
 
 <script>
+  const id_usuario = {{session()->get('user_id')}};
   $(document).ready(function(){
     var $tableAlianzas = jQuery("#tableAlianzas");
     var tableAlianzas = $tableAlianzas.DataTable( {
@@ -306,6 +307,30 @@
     @endif
   });
 
+  function crear()
+  {
+    const id_accion = 1;
+
+    $.ajax({
+      url: "permisos/validarPerm/"+id_accion+"/"+id_usuario,
+      type: 'GET',
+      dataType: 'json',
+      success:function (response) {
+        if (response.permiso) {
+          $('#modalCrearAlianza').modal('show');
+        } else {
+          swal(
+            'Permiso',
+            'No tienes permiso para realizar esta accion.',
+            'error'
+            );
+        }
+      }
+    });
+
+
+  }
+
   function crearAlianza()
   {
     $('#form_create_alianza').submit();
@@ -321,42 +346,63 @@
     var count = $('.alianzas:checked').length;
     var param = '';
 
-    if (count != 0 && count == 1) {
-      param = $('.alianzas:checked').val();
+    const id_accion = 2;
 
-      $.ajax({
-        url: 'alianzas/edit/'+param,
-        type: 'GET',
-        dataType: 'json',
-        success: function(response){
+    $.ajax({
+      url: "permisos/validarPerm/"+id_accion+"/"+id_usuario,
+      type: 'GET',
+      dataType: 'json',
+      success:function (response) {
+        if (response.permiso) {
 
-          if (response.status == 200) {
 
-            console.dir(response.data);
+          if (count != 0 && count == 1) {
+            param = $('.alianzas:checked').val();
 
-            $('#id_alianza').val(response.data.id);
-            $('#e_nombre').val(response.data.nombre);
-            $('#e_domicilio').val(response.data.domicilio);
-            $('#e_telefono').val(response.data.telefono);
-            $('#e_director').val(response.data.director);
-            $('#e_correo').val(response.data.correo);
-            $('#estatus').val(response.data.estatus);
+            $.ajax({
+              url: 'alianzas/edit/'+param,
+              type: 'GET',
+              dataType: 'json',
+              success: function(response){
 
-            $('#modalEditAlianza').modal('show');
+                if (response.status == 200) {
+
+                  console.dir(response.data);
+
+                  $('#id_alianza').val(response.data.id);
+                  $('#e_nombre').val(response.data.nombre);
+                  $('#e_domicilio').val(response.data.domicilio);
+                  $('#e_telefono').val(response.data.telefono);
+                  $('#e_director').val(response.data.director);
+                  $('#e_correo').val(response.data.correo);
+                  $('#estatus').val(response.data.estatus);
+
+                  $('#modalEditAlianza').modal('show');
+                } else {
+                  console.log('Error');
+                }
+              },
+              error: function (error) {
+                console.log('Error');
+              }
+            });
+            
+          } else if (count == 0) {
+            swal('Vacío', 'No has seleccionado ninguna alianza para editar', 'info');
           } else {
-            console.log('Error');
+            swal('Warning','No puedes seleccionar más de 1 alianza para editar', 'warning');
           }
-        },
-        error: function (error) {
-          console.log('Error');
+          
+        } else {
+          swal(
+            'Permiso',
+            'No tienes permiso para realizar esta accion.',
+            'error'
+            );
         }
-      });
-      
-    } else if (count == 0) {
-      swal('Vacío', 'No has seleccionado ninguna alianza para editar', 'info');
-    } else {
-      swal('Warning','No puedes seleccionar más de 1 alianza para editar', 'warning');
-    }
+      }
+    });
+
   }
 
   function deleteAlianza()
@@ -364,72 +410,91 @@
     var count = $('.alianzas:checked').length;
     var values = [];
 
-    if (count > 0) {
-      $('.alianzas:checked').each(function (){
-        values.push($(this).val());
-      });
+    const id_accion = 3;
 
-      swal({
-        title: 'Estás seguro?',
-        text: "Se eliminarán las alianzas seleccionadas.",
-        type: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'Sí, borrar!',
-        cancelButtonText: 'Cancelar'
-      }).then((result) => {
-        
-        if (result) {
-
-          $.ajaxSetup({
-            headers: {
-            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            }
-          });
-
-          $.ajax({
-            url: 'alianzas/delete',
-            type: 'POST',
-            dataType: 'json',
-            data: {values: values},
-            success: function(response) {
-              if (response.status == 200) {
-                swal(
-                  'Exito!',
-                  'Han sido eliminadas las alianzas correctamente',
-                  'success'
-                );
-                setTimeout(function(){
-                  window.location.reload();
-                }, 2000);
-              } else {
-                swal(
-                  'Error!',
-                  'Lo sentimos, ha ocurrido un error inesperado.',
-                  'error'
-                );
-              }
-            },
-            error: function(error) {
-                console.dir(error);
-                swal(
-                  'Error!',
-                  'Lo sentimos, ha ocurrido un error inesperado.',
-                  'error'
-                );
-            }
-          });
+    $.ajax({
+      url: "permisos/validarPerm/"+id_accion+"/"+id_usuario,
+      type: 'GET',
+      dataType: 'json',
+      success:function (response) {
+        if (response.permiso) {
           
+          if (count > 0) {
+            $('.alianzas:checked').each(function (){
+              values.push($(this).val());
+            });
+
+            swal({
+              title: 'Estás seguro?',
+              text: "Se eliminarán las alianzas seleccionadas.",
+              type: 'warning',
+              showCancelButton: true,
+              confirmButtonColor: '#3085d6',
+              cancelButtonColor: '#d33',
+              confirmButtonText: 'Sí, borrar!',
+              cancelButtonText: 'Cancelar'
+            }).then((result) => {
+              
+              if (result) {
+
+                $.ajaxSetup({
+                  headers: {
+                  'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                  }
+                });
+
+                $.ajax({
+                  url: 'alianzas/delete',
+                  type: 'POST',
+                  dataType: 'json',
+                  data: {values: values},
+                  success: function(response) {
+                    if (response.status == 200) {
+                      swal(
+                        'Exito!',
+                        'Han sido eliminadas las alianzas correctamente',
+                        'success'
+                      );
+                      setTimeout(function(){
+                        window.location.reload();
+                      }, 2000);
+                    } else {
+                      swal(
+                        'Error!',
+                        'Lo sentimos, ha ocurrido un error inesperado.',
+                        'error'
+                      );
+                    }
+                  },
+                  error: function(error) {
+                      console.dir(error);
+                      swal(
+                        'Error!',
+                        'Lo sentimos, ha ocurrido un error inesperado.',
+                        'error'
+                      );
+                  }
+                });
+                
+              }
+            });
+          } else {
+            swal(
+              'Vacío',
+              'No has seleccionado ninguna alianza para eliminar',
+              'info'
+            );
+          }
+        } else {
+          swal(
+            'Permiso',
+            'No tienes permiso para realizar esta accion.',
+            'error'
+            );
         }
-      });
-    } else {
-      swal(
-        'Vacío',
-        'No has seleccionado ninguna alianza para eliminar',
-        'info'
-      );
-    }
+      }
+    });
+
   }
 </script>
 

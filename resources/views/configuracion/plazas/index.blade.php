@@ -25,7 +25,7 @@
   <div class="col-lg-12 col-md-12">
       <div class="card">
           <div class="card-body">
-              <a href="javascript:void(0)" class="btn btn-primary" title="Agregar" data-toggle="modal" data-target="#modalCrearAlianza"><i class="mdi mdi-plus-box mdi-18px"></i></a>&nbsp;
+              <a href="javascript:void(0)" onclick="crear()" class="btn btn-primary" title="Agregar"><i class="mdi mdi-plus-box mdi-18px"></i></a>&nbsp;
               <a href="javascript:void(0)" onclick="editar()" class="btn btn-success" title="Editar"><i class="mdi mdi-pencil-box mdi-18px"></i></a>&nbsp;
               <a href="javascript:void(0)" onclick="deletePlaza()" class="btn btn-danger" title="Eliminar"><i class="mdi mdi-delete mdi-18px"></i></a>
               <br><br>
@@ -293,6 +293,7 @@
 @push('scripts')
 
 <script>
+  const id_usuario = {{session()->get('user_id')}};
   $(document).ready(function(){
     var $tablePlazas = jQuery("#tablePlazas");
     var tablePlazas = $tablePlazas.DataTable( {
@@ -334,6 +335,30 @@
     @endif
   });
 
+  function crear()
+  {
+    const id_accion = 4;
+
+    $.ajax({
+      url: "permisos/validarPerm/"+id_accion+"/"+id_usuario,
+      type: 'GET',
+      dataType: 'json',
+      success:function (response) {
+        if (response.permiso) {
+          $('#modalCrearAlianza').modal('show');
+        } else {
+          swal(
+            'Permiso',
+            'No tienes permiso para realizar esta accion.',
+            'error'
+            );
+        }
+      }
+    });
+
+
+  }
+
   function crearPlaza()
   {
     $('#form_create_plaza').submit();
@@ -349,43 +374,62 @@
     var count = $('.plazas:checked').length;
     var param = '';
 
-    if (count != 0 && count == 1) {
-      param = $('.plazas:checked').val();
+    const id_accion = 5;
 
-      $.ajax({
-        url: 'plazas/edit/'+param,
-        type: 'GET',
-        dataType: 'json',
-        success: function(response){
+    $.ajax({
+      url: "permisos/validarPerm/"+id_accion+"/"+id_usuario,
+      type: 'GET',
+      dataType: 'json',
+      success:function (response) {
+        if (response.permiso) {
+          
+          if (count != 0 && count == 1) {
+            param = $('.plazas:checked').val();
 
-          if (response.status == 200) {
+            $.ajax({
+              url: 'plazas/edit/'+param,
+              type: 'GET',
+              dataType: 'json',
+              success: function(response){
 
-            console.dir(response.data);
+                if (response.status == 200) {
 
-            $('#id_plaza').val(response.data.id);
-            $('#e_alianza').val(response.data.alianza);
-            $('#e_nombre').val(response.data.nombre);
-            $('#e_domicilio').val(response.data.domicilio);
-            $('#e_telefono').val(response.data.telefono);
-            $('#e_director').val(response.data.director);
-            $('#e_correo').val(response.data.correo);
-            $('#estatus').val(response.data.estatus);
+                  console.dir(response.data);
 
-            $('#modalEditAlianza').modal('show');
+                  $('#id_plaza').val(response.data.id);
+                  $('#e_alianza').val(response.data.alianza);
+                  $('#e_nombre').val(response.data.nombre);
+                  $('#e_domicilio').val(response.data.domicilio);
+                  $('#e_telefono').val(response.data.telefono);
+                  $('#e_director').val(response.data.director);
+                  $('#e_correo').val(response.data.correo);
+                  $('#estatus').val(response.data.estatus);
+
+                  $('#modalEditAlianza').modal('show');
+                } else {
+                  console.log('Error');
+                }
+              },
+              error: function (error) {
+                console.log('Error');
+              }
+            });
+            
+          } else if (count == 0) {
+            swal('Vacío', 'No has seleccionado ninguna alianza para editar', 'info');
           } else {
-            console.log('Error');
+            swal('Warning','No puedes seleccionar más de 1 alianza para editar', 'warning');
           }
-        },
-        error: function (error) {
-          console.log('Error');
+        } else {
+          swal(
+            'Permiso',
+            'No tienes permiso para realizar esta accion.',
+            'error'
+            );
         }
-      });
-      
-    } else if (count == 0) {
-      swal('Vacío', 'No has seleccionado ninguna alianza para editar', 'info');
-    } else {
-      swal('Warning','No puedes seleccionar más de 1 alianza para editar', 'warning');
-    }
+      }
+    });
+
   }
 
   function deletePlaza()
@@ -393,72 +437,89 @@
     var count = $('.plazas:checked').length;
     var values = [];
 
-    if (count > 0) {
-      $('.plazas:checked').each(function (){
-        values.push($(this).val());
-      });
+    const id_accion = 6;
 
-      swal({
-        title: 'Estás seguro?',
-        text: "Se eliminarán las plazas seleccionadas.",
-        type: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'Sí, borrar!',
-        cancelButtonText: 'Cancelar'
-      }).then((result) => {
-        
-        if (result) {
+    $.ajax({
+      url: "permisos/validarPerm/"+id_accion+"/"+id_usuario,
+      type: 'GET',
+      dataType: 'json',
+      success:function (response) {
+        if (response.permiso) {
+          if (count > 0) {
+            $('.plazas:checked').each(function (){
+              values.push($(this).val());
+            });
 
-          $.ajaxSetup({
-            headers: {
-            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            }
-          });
+            swal({
+              title: 'Estás seguro?',
+              text: "Se eliminarán las plazas seleccionadas.",
+              type: 'warning',
+              showCancelButton: true,
+              confirmButtonColor: '#3085d6',
+              cancelButtonColor: '#d33',
+              confirmButtonText: 'Sí, borrar!',
+              cancelButtonText: 'Cancelar'
+            }).then((result) => {
+              
+              if (result) {
 
-          $.ajax({
-            url: 'plazas/delete',
-            type: 'POST',
-            dataType: 'json',
-            data: {values: values},
-            success: function(response) {
-              if (response.status == 200) {
-                swal(
-                  'Exito!',
-                  'Han sido eliminadas las plazas correctamente',
-                  'success'
-                );
-                setTimeout(function(){
-                  window.location.reload();
-                }, 2000);
-              } else {
-                swal(
-                  'Error!',
-                  'Lo sentimos, ha ocurrido un error inesperado.',
-                  'error'
-                );
+                $.ajaxSetup({
+                  headers: {
+                  'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                  }
+                });
+
+                $.ajax({
+                  url: 'plazas/delete',
+                  type: 'POST',
+                  dataType: 'json',
+                  data: {values: values},
+                  success: function(response) {
+                    if (response.status == 200) {
+                      swal(
+                        'Exito!',
+                        'Han sido eliminadas las plazas correctamente',
+                        'success'
+                      );
+                      setTimeout(function(){
+                        window.location.reload();
+                      }, 2000);
+                    } else {
+                      swal(
+                        'Error!',
+                        'Lo sentimos, ha ocurrido un error inesperado.',
+                        'error'
+                      );
+                    }
+                  },
+                  error: function(error) {
+                      console.dir(error);
+                      swal(
+                        'Error!',
+                        'Lo sentimos, ha ocurrido un error inesperado.',
+                        'error'
+                      );
+                  }
+                });
+                
               }
-            },
-            error: function(error) {
-                console.dir(error);
-                swal(
-                  'Error!',
-                  'Lo sentimos, ha ocurrido un error inesperado.',
-                  'error'
-                );
-            }
-          });
-          
+            });
+          } else {
+            swal(
+              'Vacío',
+              'No has seleccionado ninguna plaza para eliminar',
+              'info'
+            );
+          }
+        } else {
+          swal(
+            'Permiso',
+            'No tienes permiso para realizar esta accion.',
+            'error'
+            );
         }
-      });
-    } else {
-      swal(
-        'Vacío',
-        'No has seleccionado ninguna plaza para eliminar',
-        'info'
-      );
-    }
+      }
+    });
   }
 </script>
 

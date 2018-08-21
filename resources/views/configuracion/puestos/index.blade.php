@@ -25,7 +25,7 @@
   <div class="col-lg-12 col-md-12">
       <div class="card">
           <div class="card-body">
-              <a href="javascript:void(0)" class="btn btn-primary" title="Agregar" data-toggle="modal" data-target="#modalCrearPuestos"><i class="mdi mdi-plus-box mdi-18px"></i></a>&nbsp;
+              <a href="javascript:void(0)" onclick="crear()" class="btn btn-primary" title="Agregar"><i class="mdi mdi-plus-box mdi-18px"></i></a>&nbsp;
               <a href="javascript:void(0)" onclick="editar()" class="btn btn-success" title="Editar"><i class="mdi mdi-pencil-box mdi-18px"></i></a>&nbsp;
               <a href="javascript:void(0)" onclick="deletePuesto()" class="btn btn-danger" title="Eliminar"><i class="mdi mdi-delete mdi-18px"></i></a>
               <br><br>
@@ -159,6 +159,7 @@
 @push('scripts')
 
 <script>
+  const id_usuario = {{session()->get('user_id')}};
   $(document).ready(function(){
     var $tablePuestos = jQuery("#tablePuestos");
     var tablePuestos = $tablePuestos.DataTable( {
@@ -200,6 +201,30 @@
     @endif
   });
 
+  function crear()
+  {
+    const id_accion = 13;
+
+    $.ajax({
+      url: "permisos/validarPerm/"+id_accion+"/"+id_usuario,
+      type: 'GET',
+      dataType: 'json',
+      success:function (response) {
+        if (response.permiso) {
+          $('#modalCrearPuestos').modal('show');
+        } else {
+          swal(
+            'Permiso',
+            'No tienes permiso para realizar esta accion.',
+            'error'
+            );
+        }
+      }
+    });
+
+
+  }
+
   function crearPuesto()
   {
     $('#form_create_puesto').submit();
@@ -215,36 +240,53 @@
     var count = $('.puestos:checked').length;
     var param = '';
 
-    if (count != 0 && count == 1) {
-      param = $('.puestos:checked').val();
+    const id_accion = 14;
 
-      $.ajax({
-        url: 'puestos/edit/'+param,
-        type: 'GET',
-        dataType: 'json',
-        success: function(response){
+    $.ajax({
+      url: "permisos/validarPerm/"+id_accion+"/"+id_usuario,
+      type: 'GET',
+      dataType: 'json',
+      success:function (response) {
+        if (response.permiso) {
+          if (count != 0 && count == 1) {
+            param = $('.puestos:checked').val();
 
-          if (response.status == 200) {
+            $.ajax({
+              url: 'puestos/edit/'+param,
+              type: 'GET',
+              dataType: 'json',
+              success: function(response){
 
-            $('#e_puesto').val(response.data.puesto);
+                if (response.status == 200) {
 
-            $('#id_puesto').val(response.data.id);
+                  $('#e_puesto').val(response.data.puesto);
 
-            $('#modalEditArea').modal('show');
+                  $('#id_puesto').val(response.data.id);
+
+                  $('#modalEditArea').modal('show');
+                } else {
+                  console.log('Error');
+                }
+              },
+              error: function (error) {
+                console.log('Error');
+              }
+            });
+            
+          } else if (count == 0) {
+            swal('Vacío', 'No has seleccionado ninguna puesto para editar', 'info');
           } else {
-            console.log('Error');
+            swal('Warning','No puedes seleccionar más de 1 puesto para editar', 'warning');
           }
-        },
-        error: function (error) {
-          console.log('Error');
+        } else {
+          swal(
+            'Permiso',
+            'No tienes permiso para realizar esta accion.',
+            'error'
+            );
         }
-      });
-      
-    } else if (count == 0) {
-      swal('Vacío', 'No has seleccionado ninguna puesto para editar', 'info');
-    } else {
-      swal('Warning','No puedes seleccionar más de 1 puesto para editar', 'warning');
-    }
+      }
+    });
   }
 
   function deletePuesto()
@@ -252,72 +294,89 @@
     var count = $('.puestos:checked').length;
     var values = [];
 
-    if (count > 0) {
-      $('.puestos:checked').each(function (){
-        values.push($(this).val());
-      });
+    const id_accion = 15;
 
-      swal({
-        title: 'Estás seguro?',
-        text: "Se eliminarán las puestos seleccionadas.",
-        type: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'Sí, borrar!',
-        cancelButtonText: 'Cancelar'
-      }).then((result) => {
-        
-        if (result) {
+    $.ajax({
+      url: "permisos/validarPerm/"+id_accion+"/"+id_usuario,
+      type: 'GET',
+      dataType: 'json',
+      success:function (response) {
+        if (response.permiso) {
+          if (count > 0) {
+            $('.puestos:checked').each(function (){
+              values.push($(this).val());
+            });
 
-          $.ajaxSetup({
-            headers: {
-            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            }
-          });
+            swal({
+              title: 'Estás seguro?',
+              text: "Se eliminarán las puestos seleccionadas.",
+              type: 'warning',
+              showCancelButton: true,
+              confirmButtonColor: '#3085d6',
+              cancelButtonColor: '#d33',
+              confirmButtonText: 'Sí, borrar!',
+              cancelButtonText: 'Cancelar'
+            }).then((result) => {
+              
+              if (result) {
 
-          $.ajax({
-            url: 'puestos/delete',
-            type: 'POST',
-            dataType: 'json',
-            data: {values: values},
-            success: function(response) {
-              if (response.status == 200) {
-                swal(
-                  'Exito!',
-                  'Han sido eliminadas las puestos correctamente',
-                  'success'
-                );
-                setTimeout(function(){
-                  window.location.reload();
-                }, 2000);
-              } else {
-                swal(
-                  'Error!',
-                  'Lo sentimos, ha ocurrido un error inesperado.',
-                  'error'
-                );
+                $.ajaxSetup({
+                  headers: {
+                  'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                  }
+                });
+
+                $.ajax({
+                  url: 'puestos/delete',
+                  type: 'POST',
+                  dataType: 'json',
+                  data: {values: values},
+                  success: function(response) {
+                    if (response.status == 200) {
+                      swal(
+                        'Exito!',
+                        'Han sido eliminadas las puestos correctamente',
+                        'success'
+                      );
+                      setTimeout(function(){
+                        window.location.reload();
+                      }, 2000);
+                    } else {
+                      swal(
+                        'Error!',
+                        'Lo sentimos, ha ocurrido un error inesperado.',
+                        'error'
+                      );
+                    }
+                  },
+                  error: function(error) {
+                      console.dir(error);
+                      swal(
+                        'Error!',
+                        'Lo sentimos, ha ocurrido un error inesperado.',
+                        'error'
+                      );
+                  }
+                });
+                
               }
-            },
-            error: function(error) {
-                console.dir(error);
-                swal(
-                  'Error!',
-                  'Lo sentimos, ha ocurrido un error inesperado.',
-                  'error'
-                );
-            }
-          });
-          
+            });
+          } else {
+            swal(
+              'Vacío',
+              'No has seleccionado ninguna puesto para eliminar',
+              'info'
+            );
+          }
+        } else {
+          swal(
+            'Permiso',
+            'No tienes permiso para realizar esta accion.',
+            'error'
+            );
         }
-      });
-    } else {
-      swal(
-        'Vacío',
-        'No has seleccionado ninguna puesto para eliminar',
-        'info'
-      );
-    }
+      }
+    });
   }
 
 </script>

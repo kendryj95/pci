@@ -32,10 +32,10 @@
                 <div class="form-group">
                   <div class="input-group">
                     <span class="input-group-addon"><i class="fa fa-users"></i></span>
-                    <select name="" id="usuarios" class="form-control">
+                    <select name="" id="usuarios" class="form-control" onchange="cleanCheck(); filtrar(this.value)">
                       <option value="">Selecciona un usuario</option>
                       @foreach ($usuarios as $usuario)
-                      <option value="{{$usuario->id}}">{{$usuario->usuario}}</option>
+                      <option value="{{$usuario->usuario}}" data-id="{{$usuario->id}}">{{$usuario->usuario}}</option>
                       @endforeach
                     </select>
                   </div>
@@ -60,7 +60,7 @@
                         <td>{{$permiso->modulo}}</td>
                         <td>{{$permiso->submodulo}}</td>
                         <td>{{$permiso->accion}}</td>
-                        <td></td>
+                        <td>{{$permiso->usuarios}}</td>
                       </tr>
                     @endforeach
                   </tbody>
@@ -120,7 +120,7 @@
 
                      
                      <div>
-                       <input type="checkbox" id="acc_{{$id}}" class="filled-in" name="perm[]" value="{{$id}}">
+                       <input type="checkbox" id="acc_{{$id}}" class="filled-in cleanCheck" name="perm[]" value="{{$id}}">
                        <label for="acc_{{$id}}">{{$submodulos}}</label>
                      </div>
 
@@ -149,9 +149,13 @@
 @push('scripts')
 
 <script>
+  var tablePermisos = '';
   $(document).ready(function(){
     var $tablePermisos = jQuery("#tablePermisos");
-    var tablePermisos = $tablePermisos.DataTable( {
+        tablePermisos = $tablePermisos.DataTable( {
+       "aoColumnDefs": [ 
+        { "visible": false, "targets": 4 },   
+        ],
       "language": {
         "decimal":        "",
         "emptyTable":     "Sin registros",
@@ -194,6 +198,16 @@
     @endif
   });
 
+  function filtrar(valor)
+  {
+    tablePermisos.columns(4).search(valor).draw();
+  }
+
+  function cleanCheck()
+  {
+    $('.cleanCheck').prop('checked', false);
+  }
+
   function crearPermiso()
   {
     $('#form_create_usuario').submit();
@@ -201,13 +215,28 @@
 
   function asigPermiso()
   {
-    var id_usuario = $('#usuarios').val();
-    var nombre_usuario = $('#usuarios option:selected').text();
+    var id_usuario = $('#usuarios option:selected').attr('data-id');;
+    var nombre_usuario = $('#usuarios').val();
 
-    if (id_usuario != "") {
+    if (nombre_usuario != "") {
       $('#modalCrearPermisos').modal('show');
       $('#modalCrearPermisos').find('#nombre_usuario').text(nombre_usuario);
       $('#id_usuario').val(id_usuario);
+
+      $.ajax({
+        url: 'permisos/getPermUsuario/'+id_usuario,
+        type: 'GET',
+        dataType: 'json',
+        success: function (response) {
+          response.permisos.forEach(function (p){
+            $('#acc_'+p.id_accion).prop('checked', true);
+          });
+        },
+        error: function (error) {
+          console.log("Error", error);
+        }
+      });
+      
     } else {
       swal(
         'Vacío',
