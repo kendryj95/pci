@@ -204,46 +204,30 @@ class UsuariosController extends Controller
     public function editarPass(Request $request)
     {
             $this->validate($request, [
-                'pass_act' => 'required',
                 'pass_new' => 'required',
                 'pass_new_conf' => 'required',
             ],
             [
-                'pass_act.required' => 'Contraseña actual es un campo obligatorio, no puede quedar vacío.',
                 'pass_new.required' => 'Nueva contraseña es un campo obligatorio, no puede quedar vacío.',
                 'pass_new_conf.required' => 'Confirmar nueva contraseña es un campo obligatorio, no puede quedar vacío.',
             ]);
 
-            $verificarPass = DB::select("SELECT password FROM usuarios WHERE id=?", [$request->id_usuario_pass]);
+            if ($request->pass_new == $request->pass_new_conf) {
+                DB::beginTransaction();
 
-            if ($verificarPass) {
-                if (\Hash::check($request->pass_act, $verificarPass[0]->password)) {
+                try {
+                    DB::update("UPDATE usuarios SET password=? WHERE id=?", [\Hash::make($request->pass_new), $request->id_usuario_pass]);
+                    DB::commit();
 
-                    if ($request->pass_new == $request->pass_new_conf) {
-                        DB::beginTransaction();
-
-                        try {
-                            DB::update("UPDATE usuarios SET password=? WHERE id=?", [\Hash::make($request->pass_new), $request->id_usuario_pass]);
-                            DB::commit();
-
-                            \Helper::messageFlash('success', 'Usuarios', 'Se ha editado la contraseña del usuario satisfactoriamente.');
-                            return redirect('/usuarios');
-                        } catch (Exception $e) {
-                            DB::rollback();
-                            \Helper::messageFlash('danger', 'Usuarios', 'Ha ocurrido un error inesperado. Por favor vuelva a intentarlo.');
-                            return redirect('/usuarios');
-                        }
-                    } else {
-                        \Helper::messageFlash('danger', 'Usuarios', 'Las nuevas contraseñas no coinciden.');
-                        return redirect('/usuarios');
-                    }
-                    
-                } else {
-                    \Helper::messageFlash('danger', 'Usuarios', 'La contraseña actual es incorrecta.');
+                    \Helper::messageFlash('success', 'Usuarios', 'Se ha editado la contraseña del usuario satisfactoriamente.');
+                    return redirect('/usuarios');
+                } catch (Exception $e) {
+                    DB::rollback();
+                    \Helper::messageFlash('danger', 'Usuarios', 'Ha ocurrido un error inesperado. Por favor vuelva a intentarlo.');
                     return redirect('/usuarios');
                 }
             } else {
-                \Helper::messageFlash('danger', 'Usuarios', 'Selecciona nuevamente el usuario a editar la contraseña.');
+                \Helper::messageFlash('danger', 'Usuarios', 'Las nuevas contraseñas no coinciden.');
                 return redirect('/usuarios');
             }
 

@@ -136,6 +136,7 @@
 
 <script>
   var tableAccesos = '';
+  const id_usuario = {{session()->get('user_id')}};
   $(document).ready(function(){
     var $tableAccesos = jQuery("#tableAccesos");
         tableAccesos = $tableAccesos.DataTable( {
@@ -201,36 +202,54 @@
 
   function asigAcceso()
   {
-    var id_usuario = $('#usuarios option:selected').attr('data-id');;
+    var id_usuario_acce = $('#usuarios option:selected').attr('data-id');;
     var nombre_usuario = $('#usuarios').val();
-    
 
-    if (nombre_usuario != "") {
-      $('#modalCrearAccesos').modal('show');
-      $('#modalCrearAccesos').find('#nombre_usuario').text(nombre_usuario);
-      $('#id_usuario').val(id_usuario);
+    const id_accion = 22;
 
-      $.ajax({
-        url: 'accesos/getAccesoUsuario/'+id_usuario,
-        type: 'GET',
-        dataType: 'json',
-        success: function (response) {
-          response.accesos.forEach(function (p){
-            $('#mod_'+p.id_modulo).prop('checked', true);
-          });
-        },
-        error: function (error) {
-          console.log("Error", error);
+    $.ajax({
+      url: "permisos/validarPerm/"+id_accion+"/"+id_usuario,
+      type: 'GET',
+      dataType: 'json',
+      success:function (response) {
+        if (response.permiso) {
+
+          if (nombre_usuario != "") {
+            $('#modalCrearAccesos').modal('show');
+            $('#modalCrearAccesos').find('#nombre_usuario').text(nombre_usuario);
+            $('#id_usuario').val(id_usuario_acce);
+
+            $.ajax({
+              url: 'accesos/getAccesoUsuario/'+id_usuario_acce,
+              type: 'GET',
+              dataType: 'json',
+              success: function (response) {
+                response.accesos.forEach(function (p){
+                  $('#mod_'+p.id_modulo).prop('checked', true);
+                });
+              },
+              error: function (error) {
+                console.log("Error", error);
+              }
+            });
+            
+          } else {
+            swal(
+              'Vacío',
+              'Debes seleccionar un usuario antes de crear un acceso.',
+              'warning'
+              );
+          }
+          
+        } else {
+          swal(
+            'Permiso',
+            'No tienes permiso para realizar esta accion.',
+            'error'
+            );
         }
-      });
-      
-    } else {
-      swal(
-        'Vacío',
-        'Debes seleccionar un usuario antes de crear un acceso.',
-        'warning'
-        );
-    }
+      }
+    });
   }
 
 </script>

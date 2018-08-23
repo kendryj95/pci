@@ -25,7 +25,7 @@
   <div class="col-lg-12 col-md-12">
       <div class="card">
           <div class="card-body">
-              <a href="javascript:void(0)" class="btn btn-primary" title="Agregar" data-toggle="modal" data-target="#modalCrearUsuarios"><i class="mdi mdi-plus-box mdi-18px"></i></a>&nbsp;
+              <a href="javascript:void(0)" onclick="crear()" class="btn btn-primary" title="Agregar"><i class="mdi mdi-plus-box mdi-18px"></i></a>&nbsp;
               <a href="javascript:void(0)" onclick="editar()" class="btn btn-success" title="Editar"><i class="mdi mdi-pencil-box mdi-18px"></i></a>&nbsp;
               <a href="javascript:void(0)" onclick="deleteUsuario()" class="btn btn-danger" title="Eliminar"><i class="mdi mdi-delete mdi-18px"></i></a>
               <a href="javascript:void(0)" onclick="editarPass()" class="btn btn-info" title="Editar contraseña"><i class="mdi mdi-key mdi-18px"></i></a>
@@ -360,19 +360,6 @@
              <input type="hidden" id="id_usuario_pass" name="id_usuario_pass">
 
              <div class="form-group">
-               <label for="pass_act">Contraseña actual</label>
-               <div class="input-group">
-                 <span class="input-group-addon"><i class="fa fa-lock"></i></span>
-                 <input type="password" name="pass_act" id="pass_act" class="form-control" placeholder="***********">
-               </div>
-               @if ($errors->has('pass_act'))
-                 <span class="help-block" style="color: #FC718B">
-                  <i class="fa fa-times-circle-o"></i> {{ $errors->get('pass_act')[0] }}
-                 </span>
-                 @endif
-             </div>
-
-             <div class="form-group">
                <label for="pass_new">Nueva contraseña</label>
                <div class="input-group">
                  <span class="input-group-addon"><i class="fa fa-key"></i></span>
@@ -421,69 +408,51 @@
       </div>
       <div class="modal-body">
 
-         <form action="#!" method="post">
-          {{ csrf_field() }}
-          <input type="hidden" class="id_usuario_perfil" name="id_usuario_perfil">
-           <div class="form-group">
-             <label for="pass_act">Perfil de usuario</label>
-             <div class="input-group">
-               <span class="input-group-addon"><i class="mdi mdi-account-star-variant mdi-18px"></i></span>
-               <select name="perfil" id="" class="form-control">
-                 <option value="">Selecciona un perfil</option>
-               </select>
-             </div>
-             @if ($errors->has('perfil'))
-               <span class="help-block" style="color: #FC718B">
-                <i class="fa fa-times-circle-o"></i> {{ $errors->get('perfil')[0] }}
-               </span>
-               @endif
-           
-           </div>
+        <div class="form-group">
+           <form action="permisos/clonePermits" method="post">
+           {{ csrf_field() }}
+           <input type="hidden" class="id_usuario" name="id_usuario">
+            <div class="form-group">
+              <label for="pass_new">Usuario</label>
+              <div class="input-group">
+                <span class="input-group-addon"><i class="mdi mdi-security-network mdi-18px"></i></span>
+                <select name="user_perm" id="users_perm" class="form-control">
+                  <option value="">Selecciona un usuario</option>
+                </select>
+              </div>
+              @if ($errors->has('user_perm'))
+                <span class="help-block" style="color: #FC718B">
+                 <i class="fa fa-times-circle-o"></i> {{ $errors->get('user_perm')[0] }}
+                </span>
+                @endif
+            </div>
           
-           <button type="submit" class="btn btn-info">Asignar perfil</button><br>
-         </form>
+            <button type="submit" class="btn btn-info">Clonar permisos</button><br>
+          </form>
+        </div>
 
-         <form action="#!" method="post">
-          {{ csrf_field() }}
-          <input type="hidden" class="id_usuario_perfil" name="id_usuario_perfil">
-           <div class="form-group">
-             <label for="pass_new">Usuario</label>
-             <div class="input-group">
-               <span class="input-group-addon"><i class="mdi mdi-security-network mdi-18px"></i></span>
-               <select name="permisos" id="" class="form-control">
-                 <option value="">Selecciona un usuario</option>
-               </select>
+         <div class="form-group">
+           <form action="accesos/cloneAccess" method="post">
+            {{ csrf_field() }}
+            <input type="hidden" class="id_usuario" name="id_usuario">
+             <div class="form-group">
+               <label for="pass_new_conf">Usuario</label>
+               <div class="input-group">
+                 <span class="input-group-addon"><i class="mdi mdi-account-key mdi-18px"></i></span>
+                 <select name="user_acce" id="users_acce" class="form-control">
+                   <option value="">Selecciona un usuario</option>
+                 </select>
+               </div>
+               @if ($errors->has('user_acce'))
+                 <span class="help-block" style="color: #FC718B">
+                  <i class="fa fa-times-circle-o"></i> {{ $errors->get('user_acce')[0] }}
+                 </span>
+                 @endif
              </div>
-             @if ($errors->has('permisos'))
-               <span class="help-block" style="color: #FC718B">
-                <i class="fa fa-times-circle-o"></i> {{ $errors->get('permisos')[0] }}
-               </span>
-               @endif
-           </div>
-
-           <button type="submit" class="btn btn-info">Clonar permisos</button><br>
-         </form>
-
-         <form action="#!" method="post">
-          {{ csrf_field() }}
-          <input type="hidden" class="id_usuario_perfil" name="id_usuario_perfil">
-           <div class="form-group">
-             <label for="pass_new_conf">Usuario</label>
-             <div class="input-group">
-               <span class="input-group-addon"><i class="mdi mdi-account-key mdi-18px"></i></span>
-               <select name="accesos" id="" class="form-control">
-                 <option value="">Selecciona un usuario</option>
-               </select>
-             </div>
-             @if ($errors->has('accesos'))
-               <span class="help-block" style="color: #FC718B">
-                <i class="fa fa-times-circle-o"></i> {{ $errors->get('accesos')[0] }}
-               </span>
-               @endif
-           </div>
-
-           <button type="submit" class="btn btn-info">Clonar accesos</button><br>
-         </form>
+           
+             <button type="submit" class="btn btn-info">Clonar accesos</button><br>
+           </form>
+         </div>
         
       </div>
       <div class="modal-footer">
@@ -499,6 +468,7 @@
 @push('scripts')
 
 <script>
+  const id_usuario = {{session()->get('user_id')}};
   $(document).ready(function(){
     var $tableUsuarios = jQuery("#tableUsuarios");
     var tableUsuarios = $tableUsuarios.DataTable( {
@@ -544,6 +514,30 @@
     @endif
   });
 
+  function crear()
+  {
+    const id_accion = 16;
+
+    $.ajax({
+      url: "permisos/validarPerm/"+id_accion+"/"+id_usuario,
+      type: 'GET',
+      dataType: 'json',
+      success:function (response) {
+        if (response.permiso) {
+          $('#modalCrearUsuarios').modal('show');
+        } else {
+          swal(
+            'Permiso',
+            'No tienes permiso para realizar esta accion.',
+            'error'
+            );
+        }
+      }
+    });
+
+
+  }
+
   function crearUsuario()
   {
     $('#form_create_usuario').submit();
@@ -564,60 +558,79 @@
     var count = $('.usuarios:checked').length;
     var param = '';
 
-    if (count != 0 && count == 1) {
-      param = $('.usuarios:checked').val();
+    const id_accion = 17;
 
-      $.ajax({
-        url: 'usuarios/edit/'+param,
-        type: 'GET',
-        dataType: 'json',
-        success: function(response){
+    $.ajax({
+      url: "permisos/validarPerm/"+id_accion+"/"+id_usuario,
+      type: 'GET',
+      dataType: 'json',
+      success:function (response) {
+        if (response.permiso) {
 
-          if (response.status == 200) {
+          if (count != 0 && count == 1) {
+            param = $('.usuarios:checked').val();
 
-            let html_plazas = '<option value="">Seleccionar</option>';
+            $.ajax({
+              url: 'usuarios/edit/'+param,
+              type: 'GET',
+              dataType: 'json',
+              success: function(response){
 
-            response.plazas.forEach(function(p){
-              let selected = response.data.plaza == p.id ? 'selected' : '';
-              html_plazas += '<option value="'+p.id+'" '+selected+'>'+p.nombre+'</option>';
+                if (response.status == 200) {
+
+                  let html_plazas = '<option value="">Seleccionar</option>';
+
+                  response.plazas.forEach(function(p){
+                    let selected = response.data.plaza == p.id ? 'selected' : '';
+                    html_plazas += '<option value="'+p.id+'" '+selected+'>'+p.nombre+'</option>';
+                  });
+
+                  $('#e_plaza').html(html_plazas);
+
+                  let html_puestos = '<option value="">Seleccionar</option>';
+
+                  response.puestos.forEach(function(p){
+                    let selected = response.data.puesto == p.id ? 'selected' : '';
+                    html_puestos += '<option value="'+p.id+'" '+selected+'>'+p.puesto+'</option>';
+                  });
+
+                  $('#e_puesto').html(html_puestos);
+
+                  $('#e_usuario').val(response.data.usuario);
+                  $('#e_correo').val(response.data.correo);
+                  $('#e_alianza').val(response.data.alianza);
+                  $('#e_area').val(response.data.area);
+                  $('#estatus').val(response.data.estatus);
+
+                  $('#id_usuario').val(response.data.id);
+
+                  $('#e_estatus').val(response.data.estatus);
+
+                  $('#modalEditUsuarios').modal('show');
+                } else {
+                  console.log('Error');
+                }
+              },
+              error: function (error) {
+                console.log('Error');
+              }
             });
-
-            $('#e_plaza').html(html_plazas);
-
-            let html_puestos = '<option value="">Seleccionar</option>';
-
-            response.puestos.forEach(function(p){
-              let selected = response.data.puesto == p.id ? 'selected' : '';
-              html_puestos += '<option value="'+p.id+'" '+selected+'>'+p.puesto+'</option>';
-            });
-
-            $('#e_puesto').html(html_puestos);
-
-            $('#e_usuario').val(response.data.usuario);
-            $('#e_correo').val(response.data.correo);
-            $('#e_alianza').val(response.data.alianza);
-            $('#e_area').val(response.data.area);
-            $('#estatus').val(response.data.estatus);
-
-            $('#id_usuario').val(response.data.id);
-
-            $('#e_estatus').val(response.data.estatus);
-
-            $('#modalEditUsuarios').modal('show');
+            
+          } else if (count == 0) {
+            swal('Vacío', 'No has seleccionado ninguna usuario para editar', 'info');
           } else {
-            console.log('Error');
+            swal('Warning','No puedes seleccionar más de 1 usuario para editar', 'warning');
           }
-        },
-        error: function (error) {
-          console.log('Error');
+          
+        } else {
+          swal(
+            'Permiso',
+            'No tienes permiso para realizar esta accion.',
+            'error'
+            );
         }
-      });
-      
-    } else if (count == 0) {
-      swal('Vacío', 'No has seleccionado ninguna usuario para editar', 'info');
-    } else {
-      swal('Warning','No puedes seleccionar más de 1 usuario para editar', 'warning');
-    }
+      }
+    });
   }
 
   function editarPass()
@@ -625,18 +638,37 @@
     var count = $('.usuarios:checked').length;
     var param = '';
 
-    if (count != 0 && count == 1) {
-      param = $('.usuarios:checked').val();
+    const id_accion = 19;
 
-      $('#id_usuario_pass').val(param);
+    $.ajax({
+      url: "permisos/validarPerm/"+id_accion+"/"+id_usuario,
+      type: 'GET',
+      dataType: 'json',
+      success:function (response) {
+        if (response.permiso) {
 
-      $('#modalEditPassUsuarios').modal('show');
-      
-    } else if (count == 0) {
-      swal('Vacío', 'No has seleccionado ninguna usuario para editar', 'info');
-    } else {
-      swal('Warning','No puedes seleccionar más de 1 usuario para editar', 'warning');
-    }
+          if (count != 0 && count == 1) {
+            param = $('.usuarios:checked').val();
+
+            $('#id_usuario_pass').val(param);
+
+            $('#modalEditPassUsuarios').modal('show');
+            
+          } else if (count == 0) {
+            swal('Vacío', 'No has seleccionado ninguna usuario para editar', 'info');
+          } else {
+            swal('Warning','No puedes seleccionar más de 1 usuario para editar', 'warning');
+          }
+          
+        } else {
+          swal(
+            'Permiso',
+            'No tienes permiso para realizar esta accion.',
+            'error'
+            );
+        }
+      }
+    });
   }
 
   function asigPerfil()
@@ -644,18 +676,62 @@
     var count = $('.usuarios:checked').length;
     var param = '';
 
-    if (count != 0 && count == 1) {
-      param = $('.usuarios:checked').val();
+    const id_accion = 20;
 
-      $('.id_usuario_perfil').val(param);
+    $.ajax({
+      url: "permisos/validarPerm/"+id_accion+"/"+id_usuario,
+      type: 'GET',
+      dataType: 'json',
+      success:function (response) {
+        if (response.permiso) {
 
-      $('#modalAsigPerfilUsuarios').modal('show');
-      
-    } else if (count == 0) {
-      swal('Vacío', 'No has seleccionado ninguna usuario para editar', 'info');
-    } else {
-      swal('Warning','No puedes seleccionar más de 1 usuario para editar', 'warning');
-    }
+          if (count != 0 && count == 1) {
+            param = $('.usuarios:checked').val();
+
+            $('.id_usuario').val(param);
+
+            $.ajax({
+              url: 'permisos/usersWithPermAndAccess/'+param,
+              type: 'GET',
+              dataType: 'json',
+              success: function (response) {
+                let html1 = '<option value="">Seleccionar...</option>',
+                    html2 = '<option value="">Seleccionar...</option>';
+
+                response.users_perm.forEach(function(up){
+                  html1 += '<option value="'+up.id+'">'+up.usuario+'</option>';
+                });
+
+                response.users_acce.forEach(function(ua){
+                  html2 += '<option value="'+ua.id+'">'+ua.usuario+'</option>';
+                });
+
+                $('#users_perm').html(html1);
+                $('#users_acce').html(html2);
+              },
+              error: function (error) {
+                console.dir(error);
+              }
+            });
+            
+
+            $('#modalAsigPerfilUsuarios').modal('show');
+            
+          } else if (count == 0) {
+            swal('Vacío', 'No has seleccionado ninguna usuario para editar', 'info');
+          } else {
+            swal('Warning','No puedes seleccionar más de 1 usuario para editar', 'warning');
+          }
+          
+        } else {
+          swal(
+            'Permiso',
+            'No tienes permiso para realizar esta accion.',
+            'error'
+            );
+        }
+      }
+    });
   }
 
   function deleteUsuario()
@@ -663,72 +739,91 @@
     var count = $('.usuarios:checked').length;
     var values = [];
 
-    if (count > 0) {
-      $('.usuarios:checked').each(function (){
-        values.push($(this).val());
-      });
+    const id_accion = 18;
 
-      swal({
-        title: 'Estás seguro?',
-        text: "Se eliminarán las usuarios seleccionadas.",
-        type: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'Sí, borrar!',
-        cancelButtonText: 'Cancelar'
-      }).then((result) => {
-        
-        if (result) {
+    $.ajax({
+      url: "permisos/validarPerm/"+id_accion+"/"+id_usuario,
+      type: 'GET',
+      dataType: 'json',
+      success:function (response) {
+        if (response.permiso) {
 
-          $.ajaxSetup({
-            headers: {
-            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            }
-          });
+          if (count > 0) {
+            $('.usuarios:checked').each(function (){
+              values.push($(this).val());
+            });
 
-          $.ajax({
-            url: 'usuarios/delete',
-            type: 'POST',
-            dataType: 'json',
-            data: {values: values},
-            success: function(response) {
-              if (response.status == 200) {
-                swal(
-                  'Exito!',
-                  'Han sido eliminadas las usuarios correctamente',
-                  'success'
-                );
-                setTimeout(function(){
-                  window.location.reload();
-                }, 2000);
-              } else {
-                swal(
-                  'Error!',
-                  'Lo sentimos, ha ocurrido un error inesperado.',
-                  'error'
-                );
+            swal({
+              title: 'Estás seguro?',
+              text: "Se eliminarán las usuarios seleccionadas.",
+              type: 'warning',
+              showCancelButton: true,
+              confirmButtonColor: '#3085d6',
+              cancelButtonColor: '#d33',
+              confirmButtonText: 'Sí, borrar!',
+              cancelButtonText: 'Cancelar'
+            }).then((result) => {
+              
+              if (result) {
+
+                $.ajaxSetup({
+                  headers: {
+                  'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                  }
+                });
+
+                $.ajax({
+                  url: 'usuarios/delete',
+                  type: 'POST',
+                  dataType: 'json',
+                  data: {values: values},
+                  success: function(response) {
+                    if (response.status == 200) {
+                      swal(
+                        'Exito!',
+                        'Han sido eliminadas las usuarios correctamente',
+                        'success'
+                      );
+                      setTimeout(function(){
+                        window.location.reload();
+                      }, 2000);
+                    } else {
+                      swal(
+                        'Error!',
+                        'Lo sentimos, ha ocurrido un error inesperado.',
+                        'error'
+                      );
+                    }
+                  },
+                  error: function(error) {
+                      console.dir(error);
+                      swal(
+                        'Error!',
+                        'Lo sentimos, ha ocurrido un error inesperado.',
+                        'error'
+                      );
+                  }
+                });
+                
               }
-            },
-            error: function(error) {
-                console.dir(error);
-                swal(
-                  'Error!',
-                  'Lo sentimos, ha ocurrido un error inesperado.',
-                  'error'
-                );
-            }
-          });
+            });
+          } else {
+            swal(
+              'Vacío',
+              'No has seleccionado ninguna usuario para eliminar',
+              'info'
+            );
+          }
           
+        } else {
+          swal(
+            'Permiso',
+            'No tienes permiso para realizar esta accion.',
+            'error'
+            );
         }
-      });
-    } else {
-      swal(
-        'Vacío',
-        'No has seleccionado ninguna usuario para eliminar',
-        'info'
-      );
-    }
+      }
+    });
   }
 
   function getInfo(accion, id)

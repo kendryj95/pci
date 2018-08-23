@@ -92,6 +92,8 @@ Route::group(['middleware' =>'login'], function () {
 		Route::post('/permisos/crear', 'PermisosController@store');
 		Route::get('/permisos/getPermUsuario/{id}', 'PermisosController@getPermUsuario');
 		Route::get('/permisos/validarPerm/{id_accion}/{id_usuario}', 'PermisosController@validar_permiso');
+		Route::get('/permisos/usersWithPermAndAccess/{id}', 'PermisosController@usersWithPermAndAccess');
+		Route::post('/permisos/clonePermits', 'PermisosController@clonePermits');
 
 		####################### FIN ############################
 
@@ -101,6 +103,7 @@ Route::group(['middleware' =>'login'], function () {
 		Route::post('/accesos/crear', 'AccesosController@store');
 		Route::get('/accesos/getAccesoUsuario/{id}', 'AccesosController@getAccesoUsuario');
 		Route::get('/accesos/validarPerm/{id_accion}/{id_usuario}', 'AccesosController@validar_permiso');
+		Route::post('/accesos/cloneAccess', 'AccesosController@cloneAccess');
 
 		####################### FIN ############################
 	});

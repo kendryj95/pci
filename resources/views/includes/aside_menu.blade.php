@@ -2,6 +2,7 @@
 <nav class="sidebar-nav">
     <ul id="sidebarnav">
         <li class="nav-small-cap">MENÚ PRINCIPAL</li>
+        @if (\Helper::validarAcceso(1, session()->get('user_id'))) {{-- Modulo 1 es configuración --}}
         <li> <a class="has-arrow waves-effect waves-dark" href="#" aria-expanded="false"><i class="mdi mdi-settings"></i><span class="hide-menu">Configuración </span></a>
             <ul aria-expanded="false" class="collapse">
                 <li class=""><a href="alianzas">Alianzas</a></li>
@@ -14,6 +15,7 @@
                 <li class=""><a href="accesos">Accesos</a></li>
             </ul>
         </li>
+        @endif
     </ul>
 </nav>
 <!-- End Sidebar navigation -->
