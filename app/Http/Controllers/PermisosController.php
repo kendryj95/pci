@@ -35,17 +35,24 @@ class PermisosController extends Controller
     	try {
     		if ($exist) {
     			DB::update("UPDATE permisos_usuarios SET estatus=0 WHERE id_usuario=?", [$request->id_usuario]);
+    		} else {
+    			if (!$request->perm) {
+    				DB::update("UPDATE permisos_usuarios SET estatus=0 WHERE id_usuario=?", [$request->id_usuario]);
+    			}
     		}
 
     		$insert = [];
 
-    		foreach ($request->perm as $permiso) {
-    			$insert[] = "($request->id_usuario,$permiso)";
+    		if ($request->perm) {
+    			foreach ($request->perm as $permiso) {
+    				$insert[] = "($request->id_usuario,$permiso)";
+    			}
+
+    			$sql_insert = "INSERT INTO permisos_usuarios (id_usuario, id_accion) VALUES " . implode(",", $insert);
+
+    			DB::insert($sql_insert);
     		}
-
-    		$sql_insert = "INSERT INTO permisos_usuarios (id_usuario, id_accion) VALUES " . implode(",", $insert);
-
-    		DB::insert($sql_insert);
+    		
     		DB::commit();
 
     		\Helper::messageFlash('success', 'Permisos', 'Se ha asignado los permisos satisfactoriamente');

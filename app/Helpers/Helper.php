@@ -31,6 +31,17 @@ class Helper
       return false;
     }
 
+    public static function validarAcceso($id_modulo,$id_usuario)
+    {
+      $acceso = DB::select("SELECT id FROM accesos_modulos_usuarios WHERE id_modulo=? AND id_usuario=? AND estatus=1", [$id_modulo, $id_usuario]);
+
+      if ($acceso || session()->get('user_name') == 'admin') {
+        return true;
+      } else {
+        return false;
+      }
+    }
+
     // Crea un paginador
     public static function arrayPaginator($array, $request,$perPage = 50)
     {
