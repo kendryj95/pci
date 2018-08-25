@@ -10,6 +10,12 @@ class PermisosController extends Controller
 {
     public function index()
     {
+
+    	if (!\Helper::validarAcceso(1,7,session()->get('user_id'))) {
+    	    \Helper::messageFlash('danger', 'Permisos', 'Acceso denegado.');
+    	    return redirect('/');
+    	}
+
     	$permisos = DB::select("SELECT
 								m.id AS id_m, 
 								m.modulo, 

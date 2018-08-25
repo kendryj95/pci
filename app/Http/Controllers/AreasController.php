@@ -11,6 +11,11 @@ class AreasController extends Controller
     public function index()
     {
 
+        if (!\Helper::validarAcceso(1,4,session()->get('user_id'))) {
+            \Helper::messageFlash('danger', 'Areas', 'Acceso denegado.');
+            return redirect('/');
+        }
+
     	$areas = DB::select("SELECT * FROM areas");
 
     	return view('configuracion.areas.index', ["areas" => $areas]);

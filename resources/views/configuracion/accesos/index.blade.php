@@ -48,6 +48,7 @@
                   <tr>
                     <th>No.</th>
                     <th>MODULO</th>
+                    <th>SUBMODULO</th>
                     <th>USUARIOS</th>
                   </tr>
                   </thead>
@@ -56,6 +57,7 @@
                       <tr>
                         <td>{{$i+1}}</td>
                         <td>{{$acceso->modulo}}</td>
+                        <td>{{$acceso->submodulo}}</td>
                         <td>{{$acceso->usuarios}}</td>
                       </tr>
                     @endforeach
@@ -88,34 +90,48 @@
 
              <div id="accordionexample" class="accordion" role="tablist" aria-multiselectable="true">
               
+              @foreach ($modulos as $modulo)
 
                <div class="card">
                  <div class="card-header" role="tab" id="headingOne">
                    <h5 class="mb-0">
-                     <a data-toggle="collapse" data-parent="#accordionexample" href="#modulos" aria-expanded="true" aria-controls="collapseexaOne">
-                       Modulos
+                     <a data-toggle="collapse" data-parent="#accordionexample" href="#id_{{$modulo->id_modulo}}" aria-expanded="true" aria-controls="collapseexaOne">
+                       {{$modulo->modulo}}
                      </a>
                    </h5>
                  </div>
 
-                 <div id="modulos" class="collapse" role="tabpanel" aria-labelledby="headingOne">
+                 <div id="id_{{$modulo->id_modulo}}" class="collapse" role="tabpanel" aria-labelledby="headingOne">
                    <div class="card-body">
                      
-                    @foreach ($modulos as $val)
+                    @php
+
+                    $submodulos = explode(';',$modulo->submodulos);
+
+                    @endphp
+
+                    @foreach ($submodulos as $subm)
+
+                    @php
+                      $submodulo = explode('/', $subm)[0];
+                      $id_subm = explode('/', $subm)[1];
+                    @endphp
 
                      
                      <div>
-                       <input type="checkbox" id="mod_{{$val->id}}" class="filled-in cleanCheck" name="accesos[]" value="{{$val->id}}">
-                       <label for="mod_{{$val->id}}">{{$val->modulo}}</label>
+                       <input type="checkbox" id="mod_{{$id_subm}}" class="filled-in cleanCheck" name="accesos[]" value="{{$modulo->id_modulo}},{{$id_subm}}"> {{-- value: id_modulo,id_submodulo --}}
+                       <label for="mod_{{$id_subm}}">{{$submodulo}}</label>
                      </div>
 
-                    @endforeach
+                     @endforeach
+
+                    
 
                    </div>
                  </div>
                </div>
 
-               
+               @endforeach
                
              </div>
             
@@ -141,7 +157,7 @@
     var $tableAccesos = jQuery("#tableAccesos");
         tableAccesos = $tableAccesos.DataTable( {
        "aoColumnDefs": [ 
-        { "visible": false, "targets": 2 },   
+        // { "visible": false, "targets": 3 },   
         ],
       "language": {
         "decimal":        "",
@@ -187,7 +203,7 @@
 
   function filtrar(valor)
   {
-    tableAccesos.columns(2).search(valor).draw();
+    tableAccesos.columns(3).search(valor).draw();
   }
 
   function cleanCheck()
@@ -225,7 +241,7 @@
               dataType: 'json',
               success: function (response) {
                 response.accesos.forEach(function (p){
-                  $('#mod_'+p.id_modulo).prop('checked', true);
+                  $('#mod_'+p.id_submodulo).prop('checked', true);
                 });
               },
               error: function (error) {

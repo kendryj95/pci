@@ -11,6 +11,11 @@ class PlazasController extends Controller
     public function index()
     {
 
+        if (!\Helper::validarAcceso(1,2,session()->get('user_id'))) {
+            \Helper::messageFlash('danger', 'Plazas', 'Acceso denegado.');
+            return redirect('/');
+        }
+
     	$plazas = DB::select("SELECT a.nombre AS alianza, p.* FROM plazas p INNER JOIN alianzas a ON p.id_alianza=a.id");
         $alianzas = DB::select("SELECT id, nombre FROM alianzas");
 

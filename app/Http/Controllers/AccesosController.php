@@ -10,20 +10,36 @@ class AccesosController extends Controller
 {
     public function index()
     {
+
+        if (!\Helper::validarAcceso(1,8,session()->get('user_id'))) {
+            \Helper::messageFlash('danger', 'Accesos', 'Acceso denegado.');
+            return redirect('/');
+        }
+
     	$accesos = DB::select("SELECT
-								m.id AS id_m, 
-								m.modulo,
-								(SELECT GROUP_CONCAT(u.usuario) 
-								FROM accesos_modulos_usuarios amu 
-								LEFT JOIN usuarios u ON amu.id_usuario=u.id 
-								WHERE amu.id_modulo=m.id 
-								AND amu.estatus=1 
-								GROUP BY amu.id_modulo) AS usuarios
-								FROM modulos m");
+                                m.id AS id_m, 
+                                m.modulo,
+                                sm.submodulo,
+                                (SELECT GROUP_CONCAT(u.usuario) 
+                                FROM accesos_modulos_usuarios amu 
+                                LEFT JOIN usuarios u ON amu.id_usuario=u.id 
+                                WHERE amu.id_modulo=m.id 
+                                AND amu.id_submodulo=sm.id
+                                AND amu.estatus=1 
+                                GROUP BY amu.id_modulo) AS usuarios
+                                FROM modulos m
+                                LEFT JOIN submodulos sm ON m.id=sm.id_modulo");
 
     	$usuarios = DB::select("SELECT id, usuario FROM usuarios WHERE usuario <> 'admin'");
 
-    	$modulos = DB::select("SELECT * FROM modulos");
+    	$modulos = DB::select("SELECT 
+                                m.id AS id_modulo, 
+                                m.modulo, 
+                                GROUP_CONCAT(CONCAT(sm.submodulo,'/',sm.id) ORDER BY sm.id SEPARATOR ';') AS submodulos 
+                                FROM modulos m 
+                                LEFT JOIN submodulos sm ON m.id=sm.id_modulo 
+                                GROUP BY id_modulo");
+
 
     	return view('configuracion.accesos.index', compact('accesos', 'usuarios', 'modulos'));
     }
@@ -47,10 +63,13 @@ class AccesosController extends Controller
 
     		if ($request->accesos) {
     			foreach ($request->accesos as $acceso) {
-    				$insert[] = "($acceso, $request->id_usuario)";
+                    $id_modulo = explode(',', $acceso)[0];
+                    $id_subm = explode(',', $acceso)[1];
+
+    				$insert[] = "($id_modulo, $id_subm, $request->id_usuario)";
     			}
 
-    			$sql_insert = "INSERT INTO accesos_modulos_usuarios (id_modulo, id_usuario) VALUES " . implode(",", $insert);
+    			$sql_insert = "INSERT INTO accesos_modulos_usuarios (id_modulo, id_submodulo, id_usuario) VALUES " . implode(",", $insert);
 
     			DB::insert($sql_insert);
     		}
@@ -69,7 +88,7 @@ class AccesosController extends Controller
 
     public function getAccesoUsuario($id)
     {
-    	$accesos = DB::select("SELECT id_modulo FROM accesos_modulos_usuarios WHERE id_usuario=? AND estatus=1", [$id]);
+    	$accesos = DB::select("SELECT id_submodulo FROM accesos_modulos_usuarios WHERE id_usuario=? AND estatus=1", [$id]);
 
     	if (!$accesos) {
     		$accesos = [];

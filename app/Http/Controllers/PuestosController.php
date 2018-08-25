@@ -11,6 +11,11 @@ class PuestosController extends Controller
     public function index()
     {
 
+        if (!\Helper::validarAcceso(1,5,session()->get('user_id'))) {
+            \Helper::messageFlash('danger', 'Puestos', 'Acceso denegado.');
+            return redirect('/');
+        }
+
     	$puestos = DB::select("SELECT * FROM puestos");
 
         $areas = DB::select("SELECT * FROM areas");

@@ -21,7 +21,7 @@ Route::group(['middleware' =>'login'], function () {
 
 	Route::get('/', 'SiteController@home');
 
-	Route::group(['middleware' =>'configuracion'], function () { 
+	// Route::group(['middleware' =>'configuracion'], function () { 
 
 		########### CONFIGURACIÓN - ALIANZAS ##################
 
@@ -106,5 +106,5 @@ Route::group(['middleware' =>'login'], function () {
 		Route::post('/accesos/cloneAccess', 'AccesosController@cloneAccess');
 
 		####################### FIN ############################
-	});
+	// });
 });

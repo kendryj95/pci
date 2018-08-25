@@ -31,15 +31,25 @@ class Helper
       return false;
     }
 
-    public static function validarAcceso($id_modulo,$id_usuario)
+    public static function validarAcceso($id_modulo,$id_submodulo,$id_usuario)
     {
-      $acceso = DB::select("SELECT id FROM accesos_modulos_usuarios WHERE id_modulo=? AND id_usuario=? AND estatus=1", [$id_modulo, $id_usuario]);
+      $acceso = DB::select("SELECT id FROM accesos_modulos_usuarios WHERE id_modulo=? AND id_submodulo=? AND id_usuario=? AND estatus=1", [$id_modulo, $id_submodulo, $id_usuario]);
 
       if ($acceso || session()->get('user_name') == 'admin') {
         return true;
       } else {
         return false;
       }
+    }
+
+    public static function countAccesoPerModulo($id_modulo,$id_usuario)
+    {
+      $count = DB::table('accesos_modulos_usuarios')
+                  ->where('id_modulo', $id_modulo)
+                  ->where('id_usuario', $id_usuario)
+                  ->count();
+
+      return $count;
     }
 
     // Crea un paginador
