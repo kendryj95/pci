@@ -11,6 +11,8 @@ class OficinasController extends Controller
     public function index()
     {
 
+        $permisos = \Helper::permisosUsuario(session()->get('user_id'));
+
         if (!\Helper::validarAcceso(1,3,session()->get('user_id'))) {
             \Helper::messageFlash('danger', 'Oficinas', 'Acceso denegado.');
             return redirect('/');
@@ -19,7 +21,7 @@ class OficinasController extends Controller
     	$oficinas = DB::select("SELECT o.*, a.nombre AS alianza, p.nombre AS plaza FROM oficinas o INNER JOIN alianzas a ON o.id_alianza=a.id INNER JOIN plazas p ON o.id_plaza=p.id");
         $alianzas = DB::select("SELECT id, nombre FROM alianzas");
 
-    	return view('configuracion.oficinas.index', ["oficinas" => $oficinas, "alianzas" => $alianzas]);
+    	return view('configuracion.oficinas.index', ["oficinas" => $oficinas, "alianzas" => $alianzas, "permisos_user" => $permisos]);
     }
 
     public function create(Request $request)

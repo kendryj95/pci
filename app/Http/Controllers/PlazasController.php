@@ -11,6 +11,8 @@ class PlazasController extends Controller
     public function index()
     {
 
+        $permisos = \Helper::permisosUsuario(session()->get('user_id'));
+
         if (!\Helper::validarAcceso(1,2,session()->get('user_id'))) {
             \Helper::messageFlash('danger', 'Plazas', 'Acceso denegado.');
             return redirect('/');
@@ -19,7 +21,7 @@ class PlazasController extends Controller
     	$plazas = DB::select("SELECT a.nombre AS alianza, p.* FROM plazas p INNER JOIN alianzas a ON p.id_alianza=a.id");
         $alianzas = DB::select("SELECT id, nombre FROM alianzas");
 
-    	return view('configuracion.plazas.index', ["plazas" => $plazas, "alianzas" => $alianzas]);
+    	return view('configuracion.plazas.index', ["plazas" => $plazas, "alianzas" => $alianzas, "permisos_user" => $permisos]);
     }
 
     public function create(Request $request)

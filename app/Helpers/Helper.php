@@ -42,6 +42,22 @@ class Helper
       }
     }
 
+    public static function permisosUsuario($id_usuario)
+    {
+      $permisos = DB::table('permisos_usuarios')
+                  ->select('id_accion as accion')
+                  ->where('id_usuario', $id_usuario)
+                  ->get();
+
+      $values = [];
+
+      foreach ($permisos as $permiso) {
+        $values[] = $permiso->accion;
+      }
+
+      return $values;
+    }
+
     public static function countAccesoPerModulo($id_modulo,$id_usuario)
     {
       $count = DB::table('accesos_modulos_usuarios')

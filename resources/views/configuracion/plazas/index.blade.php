@@ -25,9 +25,15 @@
   <div class="col-lg-12 col-md-12">
       <div class="card">
           <div class="card-body">
+              @if (in_array(4, $permisos_user) || session()->get('user_name') == 'admin')
               <a href="javascript:void(0)" onclick="crear()" class="btn btn-primary" title="Agregar"><i class="mdi mdi-plus-box mdi-18px"></i></a>&nbsp;
+              @endif
+              @if (in_array(5, $permisos_user) || session()->get('user_name') == 'admin')
               <a href="javascript:void(0)" onclick="editar()" class="btn btn-success" title="Editar"><i class="mdi mdi-pencil-box mdi-18px"></i></a>&nbsp;
+              @endif
+              @if (in_array(6, $permisos_user) || session()->get('user_name') == 'admin')
               <a href="javascript:void(0)" onclick="deletePlaza()" class="btn btn-danger" title="Eliminar"><i class="mdi mdi-delete mdi-18px"></i></a>
+              @endif
               <br><br>
               <div class="table-responsive">
                 <table id="tablePlazas" class="table table-bordered table-striped">

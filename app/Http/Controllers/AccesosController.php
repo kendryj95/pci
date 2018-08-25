@@ -11,6 +11,8 @@ class AccesosController extends Controller
     public function index()
     {
 
+        $permisos_user = \Helper::permisosUsuario(session()->get('user_id'));
+
         if (!\Helper::validarAcceso(1,8,session()->get('user_id'))) {
             \Helper::messageFlash('danger', 'Accesos', 'Acceso denegado.');
             return redirect('/');
@@ -41,7 +43,7 @@ class AccesosController extends Controller
                                 GROUP BY id_modulo");
 
 
-    	return view('configuracion.accesos.index', compact('accesos', 'usuarios', 'modulos'));
+    	return view('configuracion.accesos.index', compact('accesos', 'usuarios', 'modulos', 'permisos_user'));
     }
 
     public function store(Request $request)

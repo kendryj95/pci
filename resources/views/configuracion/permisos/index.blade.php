@@ -25,7 +25,9 @@
   <div class="col-lg-12 col-md-12">
       <div class="card">
           <div class="card-body">
+              @if (in_array(21, $permisos_user) || session()->get('user_name') == 'admin')
               <a href="javascript:void(0)" onclick="asigPermiso()" class="btn btn-primary" title="Agregar"><i class="mdi mdi-plus-box mdi-18px"></i></a>&nbsp;
+              @endif
               <br><br>
 
               <div class="col-md-4">

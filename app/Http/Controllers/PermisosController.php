@@ -11,6 +11,8 @@ class PermisosController extends Controller
     public function index()
     {
 
+        $permisos_user = \Helper::permisosUsuario(session()->get('user_id'));
+
     	if (!\Helper::validarAcceso(1,7,session()->get('user_id'))) {
     	    \Helper::messageFlash('danger', 'Permisos', 'Acceso denegado.');
     	    return redirect('/');
@@ -30,7 +32,7 @@ class PermisosController extends Controller
     	$usuarios = DB::select("SELECT id, usuario FROM usuarios WHERE usuario <> 'admin'");
     	$modulos_submodulos_acciones = DB::select("SELECT m.id, m.modulo, GROUP_CONCAT(CONCAT(sm.submodulo,' - ',sma.accion,'/',sma.id) ORDER BY sma.id SEPARATOR ';') AS submodulos_acciones FROM modulos m LEFT JOIN submodulos sm ON m.id=sm.id_modulo LEFT JOIN submodulos_acciones sma ON sm.id=sma.id_submodulo GROUP BY m.id");
 
-    	return view('configuracion.permisos.index', compact('permisos', 'usuarios', 'modulos_submodulos_acciones'));
+    	return view('configuracion.permisos.index', compact('permisos', 'usuarios', 'modulos_submodulos_acciones', 'permisos_user'));
     }
 
     public function store(Request $request)

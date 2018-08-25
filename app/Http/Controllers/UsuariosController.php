@@ -11,6 +11,8 @@ class UsuariosController extends Controller
     public function index()
     {
 
+        $permisos = \Helper::permisosUsuario(session()->get('user_id'));
+
         if (!\Helper::validarAcceso(1,6,session()->get('user_id'))) {
             \Helper::messageFlash('danger', 'Usuarios', 'Acceso denegado.');
             return redirect('/');
@@ -21,7 +23,7 @@ class UsuariosController extends Controller
         $alianzas = DB::select("SELECT id, nombre FROM alianzas");
         $areas = DB::select("SELECT id, area FROM areas");
 
-    	return view('configuracion.usuarios.index', ["usuarios" => $usuarios, "alianzas" => $alianzas, "areas" => $areas]);
+    	return view('configuracion.usuarios.index', ["usuarios" => $usuarios, "alianzas" => $alianzas, "areas" => $areas, "permisos_user" => $permisos]);
     }
 
     public function create(Request $request)

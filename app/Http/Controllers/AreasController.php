@@ -11,6 +11,8 @@ class AreasController extends Controller
     public function index()
     {
 
+        $permisos = \Helper::permisosUsuario(session()->get('user_id'));
+
         if (!\Helper::validarAcceso(1,4,session()->get('user_id'))) {
             \Helper::messageFlash('danger', 'Areas', 'Acceso denegado.');
             return redirect('/');
@@ -18,7 +20,7 @@ class AreasController extends Controller
 
     	$areas = DB::select("SELECT * FROM areas");
 
-    	return view('configuracion.areas.index', ["areas" => $areas]);
+    	return view('configuracion.areas.index', ["areas" => $areas, "permisos_user" => $permisos]);
     }
 
     public function create(Request $request)

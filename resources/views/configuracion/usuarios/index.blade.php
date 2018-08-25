@@ -1,4 +1,4 @@
-@extends('layouts.app')
+ || session()->get('user_name') == 'admin'@extends('layouts.app')
 
 @push('meta')
 
@@ -25,11 +25,21 @@
   <div class="col-lg-12 col-md-12">
       <div class="card">
           <div class="card-body">
+              @if (in_array(16, $permisos_user) || session()->get('user_name') == 'admin')
               <a href="javascript:void(0)" onclick="crear()" class="btn btn-primary" title="Agregar"><i class="mdi mdi-plus-box mdi-18px"></i></a>&nbsp;
+              @endif
+              @if (in_array(17, $permisos_user) || session()->get('user_name') == 'admin')
               <a href="javascript:void(0)" onclick="editar()" class="btn btn-success" title="Editar"><i class="mdi mdi-pencil-box mdi-18px"></i></a>&nbsp;
+              @endif
+              @if (in_array(18, $permisos_user) || session()->get('user_name') == 'admin')
               <a href="javascript:void(0)" onclick="deleteUsuario()" class="btn btn-danger" title="Eliminar"><i class="mdi mdi-delete mdi-18px"></i></a>
+              @endif
+              @if (in_array(19, $permisos_user) || session()->get('user_name') == 'admin')
               <a href="javascript:void(0)" onclick="editarPass()" class="btn btn-info" title="Editar contraseña"><i class="mdi mdi-key mdi-18px"></i></a>
+              @endif
+              @if (in_array(20, $permisos_user) || session()->get('user_name') == 'admin')
               <a href="javascript:void(0)" onclick="asigPerfil()" class="btn btn-secondary" title="Perfiles, Permisos y Acessos"><i class="mdi mdi-security mdi-18px"></i></a>
+              @endif
               <br><br>
               <div class="table-responsive">
                 <table id="tableUsuarios" class="table table-bordered table-striped">

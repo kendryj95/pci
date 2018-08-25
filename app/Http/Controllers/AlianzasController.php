@@ -11,6 +11,8 @@ class AlianzasController extends Controller
     public function index()
     {
 
+        $permisos = \Helper::permisosUsuario(session()->get('user_id'));
+
         if (!\Helper::validarAcceso(1,1,session()->get('user_id'))) {
             \Helper::messageFlash('danger', 'Alianzas', 'Acceso denegado.');
             return redirect('/');
@@ -18,7 +20,7 @@ class AlianzasController extends Controller
 
     	$alianzas = DB::select("SELECT * FROM alianzas");
 
-    	return view('configuracion.alianzas.index', ["alianzas" => $alianzas]);
+    	return view('configuracion.alianzas.index', ["alianzas" => $alianzas, "permisos_user" => $permisos]);
     }
 
     public function create(Request $request)

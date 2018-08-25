@@ -11,6 +11,8 @@ class PuestosController extends Controller
     public function index()
     {
 
+        $permisos = \Helper::permisosUsuario(session()->get('user_id'));
+
         if (!\Helper::validarAcceso(1,5,session()->get('user_id'))) {
             \Helper::messageFlash('danger', 'Puestos', 'Acceso denegado.');
             return redirect('/');
@@ -20,7 +22,7 @@ class PuestosController extends Controller
 
         $areas = DB::select("SELECT * FROM areas");
 
-    	return view('configuracion.puestos.index', ["puestos" => $puestos, "areas" => $areas]);
+    	return view('configuracion.puestos.index', ["puestos" => $puestos, "areas" => $areas, "permisos_user" => $permisos]);
     }
 
     public function create(Request $request)
