@@ -1,26 +1,28 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Configuracion;
 
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
 use DB;
 
-class AlianzasController extends Controller
+class PlazasController extends Controller
 {
     public function index()
     {
 
         $permisos = \Helper::permisosUsuario(session()->get('user_id'));
 
-        if (!\Helper::validarAcceso(1,1,session()->get('user_id'))) {
-            \Helper::messageFlash('danger', 'Alianzas', 'Acceso denegado.');
+        if (!\Helper::validarAcceso(1,2,session()->get('user_id'))) {
+            \Helper::messageFlash('danger', 'Plazas', 'Acceso denegado.');
             return redirect('/');
         }
 
-    	$alianzas = DB::select("SELECT * FROM alianzas");
+    	$plazas = DB::select("SELECT a.nombre AS alianza, p.* FROM plazas p INNER JOIN alianzas a ON p.id_alianza=a.id");
+        $alianzas = DB::select("SELECT id, nombre FROM alianzas");
 
-    	return view('configuracion.alianzas.index', ["alianzas" => $alianzas, "permisos_user" => $permisos]);
+    	return view('configuracion.plazas.index', ["plazas" => $plazas, "alianzas" => $alianzas, "permisos_user" => $permisos]);
     }
 
     public function create(Request $request)
@@ -33,12 +35,12 @@ class AlianzasController extends Controller
             'correo' => 'required|email'
         ],
         [
-            'nombre.required' => 'Nombre de alianza es un campo obligatorio, no puede quedar vacío.',
+            'nombre.required' => 'Nombre de plaza es un campo obligatorio, no puede quedar vacío.',
             'domicilio.required' => 'Domicilio es un campo obligatorio, no puede quedar vacío.',
             'telefono.required' => 'Telefono es un campo obligatorio, no puede quedar vacío.',
             'telefono.numeric' => 'El telefono no es valido.',
             'telefono.min' => 'El telefono debe contener entre 7 y 12 dígitos.',
-            'director.required' => 'Director de alianza es un campo obligatorio, no puede quedar vacío.',
+            'director.required' => 'Director de plaza es un campo obligatorio, no puede quedar vacío.',
             'correo.required' => 'Correo es un campo obligatorio, no puede quedar vacío.',
             'correo.email' => 'El correo electronico no es valido.'
         ]);
@@ -46,13 +48,14 @@ class AlianzasController extends Controller
         DB::beginTransaction();
 
         try {
-        	DB::insert("INSERT INTO alianzas VALUES (null,?,?,?,?,?,?)", [$_POST['nombre'], $_POST['domicilio'], $_POST['telefono'], $_POST['director'], $_POST['correo'], $_POST['estatus']]);
+        	DB::insert("INSERT INTO plazas VALUES (null,?,?,?,?,?,?,?,null)", [$_POST['alianza'], $_POST['nombre'], $_POST['domicilio'], $_POST['telefono'], $_POST['director'], $_POST['correo'], $_POST['estatus']]);
         	DB::commit();
-            \Helper::messageFlash('success', 'Alianzas', 'Se ha creado la alianza satisfactoriamente');
-        	return redirect('/alianzas');
+            \Helper::messageFlash('success', 'Plazas', 'Se ha editado la plaza satisfactoriamente');
+            return redirect("/plazas");
         } catch (Exception $e) {
         	DB::rollback();
-        	return dd($e);
+        	\Helper::messageFlash('danger', 'Plazas', 'Ha ocurrido un error inesperado. Vuelva a intentarlo por favor');
+            return redirect("/plazas");
         }
 
         
@@ -60,13 +63,13 @@ class AlianzasController extends Controller
 
     public function editView($id)
     {
-    	$alianza = DB::select("SELECT * FROM alianzas WHERE id=?", [$id]);
+    	$plaza = DB::select("SELECT a.id AS alianza, p.* FROM plazas p INNER JOIN alianzas a ON p.id_alianza=a.id WHERE p.id=?", [$id]);
         $status = '';
         $data = '';
 
-    	if ($alianza) {
+    	if ($plaza) {
     		$status = 200;
-            $data = $alianza[0];
+            $data = $plaza[0];
     	} else {
     		$status = 500;
     	}
@@ -102,30 +105,29 @@ class AlianzasController extends Controller
         DB::beginTransaction();
 
         try {
-        	DB::update("UPDATE alianzas SET nombre=?, domicilio=?, telefono=?, director=?, correo=?, estatus=? WHERE id=?", [$_POST['e_nombre'], $_POST['e_domicilio'], $_POST['e_telefono'], $_POST['e_director'], $_POST['e_correo'], $_POST['estatus'], $_POST['id_alianza']]);
+        	DB::update("UPDATE plazas SET id_alianza=?, nombre=?, domicilio=?, telefono=?, director=?, correo=?, estatus=? WHERE id=?", [$_POST['alianza'], $_POST['e_nombre'], $_POST['e_domicilio'], $_POST['e_telefono'], $_POST['e_director'], $_POST['e_correo'], $_POST['estatus'], $_POST['id_plaza']]);
         	DB::commit();
-
-            \Helper::messageFlash('success', 'Alianzas', 'Se ha editado la alianza satisfactoriamente');
-        	return redirect("/alianzas");
+        	\Helper::messageFlash('success', 'Plazas', 'Se ha editado la plaza satisfactoriamente');
+            return redirect("/plazas");
         } catch (Exception $e) {
         	DB::rollback();
-        	\Helper::messageFlash('danger', 'Alianzas', 'Ha ocurrido un error inesperado. Vuelva a intentarlo por favor');
-            return redirect("/alianzas");
+        	\Helper::messageFlash('danger', 'Plazas', 'Ha ocurrido un error inesperado. Vuelva a intentarlo por favor');
+            return redirect("/plazas");
         }
     }
 
     public function delete()
     {
-    	$id_alianzas = isset($_POST['values']) ? $_POST['values'] : false;
+    	$id_plazas = isset($_POST['values']) ? $_POST['values'] : false;
     	$status = '';
 
-    	if ($id_alianzas) {
+    	if ($id_plazas) {
     		DB::beginTransaction();
 
     		try {
-    			foreach ($id_alianzas as $id) {
+    			foreach ($id_plazas as $id) {
     				
-    				DB::delete("DELETE FROM alianzas WHERE id=?", [$id]);
+    				DB::delete("DELETE FROM plazas WHERE id=?", [$id]);
     			}
     			DB::commit();
 

@@ -159,7 +159,7 @@
     var $tableAccesos = jQuery("#tableAccesos");
         tableAccesos = $tableAccesos.DataTable( {
        "aoColumnDefs": [ 
-        // { "visible": false, "targets": 3 },   
+        { "visible": false, "targets": 3 },   
         ],
       "language": {
         "decimal":        "",
