@@ -116,5 +116,15 @@ Route::group(['middleware' =>'login'], function () {
 		Route::post('/clientes/grupos/delete', 'Clientes\GruposController@delete');
 
 		####################### FIN ############################
+
+		########### CLIENTES - CLIENTES ##################
+
+		Route::get('/clientes', 'Clientes\ClientesController@index');
+		Route::post('/clientes/crear', 'Clientes\ClientesController@store');
+		Route::get('/clientes/grupos/edit/{id}', 'Clientes\ClientesController@edit');
+		Route::post('/clientes/grupos/editar', 'Clientes\ClientesController@editStore');
+		Route::post('/clientes/grupos/delete', 'Clientes\ClientesController@delete');
+
+		####################### FIN ############################
 	// });
 });

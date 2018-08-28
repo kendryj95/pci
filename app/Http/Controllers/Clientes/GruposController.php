@@ -13,7 +13,7 @@ class GruposController extends Controller
     	$permisos = \Helper::permisosUsuario(session()->get('user_id'));
 
     	if (!\Helper::validarAcceso(2,9,session()->get('user_id'))) {
-    	    \Helper::messageFlash('danger', 'Alianzas', 'Acceso denegado.');
+    	    \Helper::messageFlash('danger', 'Grupos', 'Acceso denegado.');
     	    return redirect('/');
     	}
 

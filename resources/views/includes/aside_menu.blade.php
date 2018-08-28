@@ -40,7 +40,7 @@
                 <li class=""><a href="{{ url('clientes/grupos') }}">Grupos</a></li> {{-- id: 1 --}}
                 {{-- @endif --}}
                 {{-- @if (\Helper::validarAcceso(1, 2, session()->get('user_id'))) --}}
-                <li class=""><a href="#">Clientes</a></li> {{-- id: 2 --}}
+                <li class=""><a href="{{url('clientes')}}">Clientes</a></li> {{-- id: 2 --}}
                 {{-- @endif --}}
                 {{-- @if (\Helper::validarAcceso(1, 3, session()->get('user_id'))) --}}
                 <li class=""><a href="#">Domicilios</a></li> {{-- id: 3 --}}
