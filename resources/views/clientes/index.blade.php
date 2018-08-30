@@ -21,10 +21,12 @@
 
 @section('content')
 
-@if ($errors->has('e_cliente'))
-
+@if ($errors->has('e_rfc') || $errors->has('e_razon_social') || $errors->has('e_alias') || $errors->has('e_giro') || $errors->has('e_correo_recibos') || $errors->has('e_correo_facturas'))
+  
     <div class="alert alert-danger">
-      <p>{{$errors->get('e_cliente')[0]}}</p>
+      @foreach ($errors->all() as $error)
+      <p>{{$error}}</p>
+      @endforeach
     </div>
 
 @endif
@@ -37,10 +39,10 @@
               <a href="javascript:void(0)" onclick="crear()" class="btn btn-primary" title="Agregar"><i class="mdi mdi-plus-box mdi-18px"></i></a>&nbsp;
               @endif
               @if (in_array(27, $permisos) || session()->get('user_name') == 'admin')
-              <a href="javascript:void(0)" onclick="" class="btn btn-success" title="Editar"><i class="mdi mdi-pencil-box mdi-18px"></i></a>&nbsp;
+              <a href="javascript:void(0)" onclick="editar()" class="btn btn-success" title="Editar"><i class="mdi mdi-pencil-box mdi-18px"></i></a>&nbsp;
               @endif
               @if (in_array(28, $permisos) || session()->get('user_name') == 'admin')
-              <a href="javascript:void(0)" onclick="" class="btn btn-danger" title="Eliminar"><i class="mdi mdi-delete mdi-18px"></i></a>&nbsp;
+              <a href="javascript:void(0)" onclick="deleteCliente()" class="btn btn-danger" title="Eliminar"><i class="mdi mdi-delete mdi-18px"></i></a>&nbsp;
               @endif
               @if (in_array(29, $permisos) || session()->get('user_name') == 'admin')
               <a href="javascript:void(0)" onclick="" class="btn btn-secondary" title="Expediente cliente"><i class="mdi mdi-archive mdi-18px"></i></a>
@@ -87,7 +89,7 @@
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title" id="myLargeModalLabel">Large modal</h4>
+                <h4 class="modal-title" id="myLargeModalLabel">Crear cliente</h4>
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
             </div>
             <div class="modal-body">
@@ -98,7 +100,7 @@
                     <div class="col-xs-12 col-lg-4">
                       <div class="form-group @if ($errors->has('rfc')) has-danger @endif">
                         <label class="form-control-label" for="rfc">RFC</label>
-                        <input type="text" class="form-control @if ($errors->has('rfc')) form-control-danger @endif" name="rfc" id="rfc" placeholder="RFC">
+                        <input type="text" onkeyup="upperCase(this)" class="form-control @if ($errors->has('rfc')) form-control-danger @endif" name="rfc" id="rfc" placeholder="RFC">
                         @if ($errors->has('rfc'))
                           <div class="form-control-feedback">{{$errors->get('rfc')[0]}}</div>
                         @endif
@@ -107,7 +109,7 @@
                     <div class="col-xs-12 col-lg-8">
                       <div class="form-group @if ($errors->has('razon_social')) has-danger @endif">
                         <label class="form-control-label" for="razon_social">Razón Social</label>
-                        <input type="text" class="form-control @if ($errors->has('razon_social')) form-control-danger @endif" name="razon_social" id="razon_social" placeholder="Nombre completo/Razón social del cliente">
+                        <input type="text" onkeyup="upperCase(this)" class="form-control @if ($errors->has('razon_social')) form-control-danger @endif" name="razon_social" id="razon_social" placeholder="Nombre completo/Razón social del cliente">
                         @if ($errors->has('razon_social'))
                           <div class="form-control-feedback">{{$errors->get('razon_social')[0]}}</div>
                         @endif
@@ -117,7 +119,7 @@
                     <div class="col-xs-12 col-lg-4">
                       <div class="form-group @if ($errors->has('alias')) has-danger @endif">
                         <label class="form-control-label" for="alias">Alias</label>
-                        <input type="text" class="form-control @if ($errors->has('alias')) form-control-danger @endif" name="alias" id="alias" placeholder="Alias">
+                        <input type="text" onkeyup="upperCase(this)" class="form-control @if ($errors->has('alias')) form-control-danger @endif" name="alias" id="alias" placeholder="Alias">
                         @if ($errors->has('alias'))
                           <div class="form-control-feedback">{{$errors->get('alias')[0]}}</div>
                         @endif
@@ -126,7 +128,7 @@
                     <div class="col-xs-12 col-lg-5">
                       <div class="form-group @if ($errors->has('giro')) has-danger @endif">
                         <label class="form-control-label" for="giro">Giro</label>
-                        <input type="text" class="form-control @if ($errors->has('giro')) form-control-danger @endif" name="giro" id="giro" placeholder="Giro">
+                        <input type="text" onkeyup="upperCase(this)" class="form-control @if ($errors->has('giro')) form-control-danger @endif" name="giro" id="giro" placeholder="Giro">
                         @if ($errors->has('giro'))
                           <div class="form-control-feedback">{{$errors->get('giro')[0]}}</div>
                         @endif
@@ -209,15 +211,111 @@
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title" id="myLargeModalLabel">Large modal</h4>
+                <h4 class="modal-title" id="myLargeModalLabel">Editar cliente</h4>
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
             </div>
             <div class="modal-body">
-                <form action="" id="form_create_cliente" method="post">
+                <form action="{{ url('clientes/editar') }}" id="form_edit_cliente" method="post">
                   {{csrf_field()}}
                   <input type="hidden" name="id_cliente" id="id_cliente">
-                  Lorem ipsum dolor sit amet, consectetur adipisicing elit. Perspiciatis, libero! Rerum voluptas commodi provident id totam eius vero soluta debitis. Exercitationem ex dicta molestiae hic dolor quod vitae facilis harum!
-                  }
+                  
+                  <div class="row">
+                    <div class="col-xs-12 col-lg-4">
+                      <div class="form-group @if ($errors->has('e_rfc')) has-danger @endif">
+                        <label class="form-control-label" for="e_rfc">RFC</label>
+                        <input type="text" onkeyup="upperCase(this)" class="form-control @if ($errors->has('e_rfc')) form-control-danger @endif" name="e_rfc" id="e_rfc" placeholder="RFC">
+                        @if ($errors->has('e_rfc'))
+                          <div class="form-control-feedback">{{$errors->get('e_rfc')[0]}}</div>
+                        @endif
+                      </div>
+                    </div>
+                    <div class="col-xs-12 col-lg-8">
+                      <div class="form-group @if ($errors->has('e_razon_social')) has-danger @endif">
+                        <label class="form-control-label" for="e_razon_social">Razón Social</label>
+                        <input type="text" onkeyup="upperCase(this)" class="form-control @if ($errors->has('e_razon_social')) form-control-danger @endif" name="e_razon_social" id="e_razon_social" placeholder="Nombre completo/Razón social del cliente">
+                        @if ($errors->has('e_razon_social'))
+                          <div class="form-control-feedback">{{$errors->get('e_razon_social')[0]}}</div>
+                        @endif
+                      </div>
+                    </div>
+
+                    <div class="col-xs-12 col-lg-4">
+                      <div class="form-group @if ($errors->has('e_alias')) has-danger @endif">
+                        <label class="form-control-label" for="e_alias">Alias</label>
+                        <input type="text" onkeyup="upperCase(this)" class="form-control @if ($errors->has('e_alias')) form-control-danger @endif" name="e_alias" id="e_alias" placeholder="Alias">
+                        @if ($errors->has('e_alias'))
+                          <div class="form-control-feedback">{{$errors->get('e_alias')[0]}}</div>
+                        @endif
+                      </div>
+                    </div>
+                    <div class="col-xs-12 col-lg-5">
+                      <div class="form-group @if ($errors->has('e_giro')) has-danger @endif">
+                        <label class="form-control-label" for="e_giro">Giro</label>
+                        <input type="text" onkeyup="upperCase(this)" class="form-control @if ($errors->has('e_giro')) form-control-danger @endif" name="e_giro" id="e_giro" placeholder="Giro">
+                        @if ($errors->has('e_giro'))
+                          <div class="form-control-feedback">{{$errors->get('e_giro')[0]}}</div>
+                        @endif
+                      </div>
+                    </div>
+                    <div class="col-xs-12 col-lg-3">
+                      <div class="form-group">
+                        <label class="form-control-label" for="estatus">Estatus</label>
+                        <select name="estatus" id="estatus" class="form-control">
+                          <option value="1">SÍ</option>
+                          <option value="2">NO</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <div class="col-xs-12 col-lg-6">
+                      <div class="form-group">
+                        <label class="form-control-label" for="clase_riesgo">Clase Riesgo</label>
+                        <select name="clase_riesgo" id="clase_riesgo" class="form-control">
+                          @foreach ($clases_riesgo as $clase)
+                            <option value="{{$clase->id}}">{{$clase->clase}}</option>
+                          @endforeach
+                        </select>
+                      </div>
+                    </div>
+                    <div class="col-xs-12 col-lg-6">
+                      <div class="form-group">
+                        <label class="form-control-label" for="grupo">Grupo</label>
+                        <select name="grupo" id="grupo" class="form-control">
+                          <option value="">Sin Grupo</option>
+                          @foreach ($grupos as $grupo)
+                          <option value="{{$grupo->id}}">{{$grupo->grupo}}</option>
+                          @endforeach
+                        </select>
+                      </div>
+                    </div>
+
+                    <div class="col-xs-12 col-lg-6">
+                      <div class="form-group @if ($errors->has('e_correos_recibos')) has-danger @endif">
+                        <label class="form-control-label" for="e_correos_recibos">Correo para envío de Recibos timbrados</label>
+                        <div class="tags-default">
+                            <input type="text" class="form-control @if ($errors->has('e_correos_recibos')) form-control-danger @endif" id="e_correos_recibos" name="e_correos_recibos" data-role="tagsinput" placeholder="Agregar correos" /> 
+                        </div>
+                        @if ($errors->has('e_correos_recibos'))
+                          <div class="form-control-feedback">{{$errors->get('e_correos_recibos')[0]}}</div>
+                        @endif
+                      </div>
+                    </div>
+
+                    <div class="col-xs-12 col-lg-6">
+                      <div class="form-group @if ($errors->has('e_correos_facturas')) has-danger @endif">
+                        <label class="form-control-label" for="e_correos_facturas">Correo para envío de Factura eléctronica</label>
+                        <div class="tags-default">
+                            <input type="text" class="form-control @if ($errors->has('e_correos_facturas')) form-control-danger @endif" id="e_correos_facturas" name="e_correos_facturas" data-role="tagsinput" placeholder="Agregar correos" /> 
+                        </div>
+                        @if ($errors->has('e_correos_facturas'))
+                          <div class="form-control-feedback">{{$errors->get('e_correos_facturas')[0]}}</div>
+                        @endif
+                      </div>
+                    </div>
+
+
+
+                  </div>
                 </form>
             </div>
             <div class="modal-footer">
@@ -230,7 +328,6 @@
     <!-- /.modal-dialog -->
 </div>
 <!-- /.modal -->
-
 
 @endsection
 
@@ -299,17 +396,22 @@
       param = $('.clientes:checked').val();
 
       $.ajax({
-        url: '{{url('clientes/clientes/edit')}}/'+param,
+        url: '{{url('clientes/edit')}}/'+param,
         type: 'GET',
         dataType: 'json',
         success: function(response){
 
-          console.dir(response.data);
+          $('#id_cliente').val(response.cliente.id);
+          $('#e_alias').val(response.cliente.alias);
+          $('#estatus').val(response.cliente.estatus);
+          $('#e_giro').val(response.cliente.giro);
+          $('#grupo').val(response.cliente.id_grupo);
+          $('#e_razon_social').val(response.cliente.razon_social);
+          $('#e_rfc').val(response.cliente.rfc);
+          $('#e_correos_recibos').tagsinput('add', response.correos_recibos);
+          $('#e_correos_facturas').tagsinput('add', response.correos_facturas);
 
-          $('#id_cliente').val(response.data.id);
-          $('#e_cliente').val(response.data.cliente);
-
-          $('#modalEditGrupo').modal('show');
+          $('#modalEditCliente').modal('show');
         },
         error: function (error) {
           console.log('Error');
@@ -353,7 +455,7 @@
           });
 
           $.ajax({
-            url: '{{url('clientes/clientes/delete')}}',
+            url: '{{url('clientes/delete')}}',
             type: 'POST',
             dataType: 'json',
             data: {values: values},
@@ -395,6 +497,11 @@
       );
     }
 
+  }
+
+  function upperCase(cmp)
+  {
+    cmp.value = cmp.value.toUpperCase();
   }
 </script>
 

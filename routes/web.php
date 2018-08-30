@@ -121,9 +121,9 @@ Route::group(['middleware' =>'login'], function () {
 
 		Route::get('/clientes', 'Clientes\ClientesController@index');
 		Route::post('/clientes/crear', 'Clientes\ClientesController@store');
-		Route::get('/clientes/grupos/edit/{id}', 'Clientes\ClientesController@edit');
-		Route::post('/clientes/grupos/editar', 'Clientes\ClientesController@editStore');
-		Route::post('/clientes/grupos/delete', 'Clientes\ClientesController@delete');
+		Route::get('/clientes/edit/{id}', 'Clientes\ClientesController@edit');
+		Route::post('/clientes/editar', 'Clientes\ClientesController@storeEdit');
+		Route::post('/clientes/delete', 'Clientes\ClientesController@delete');
 
 		####################### FIN ############################
 	// });
