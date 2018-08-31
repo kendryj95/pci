@@ -45,7 +45,7 @@
               <a href="javascript:void(0)" onclick="deleteCliente()" class="btn btn-danger" title="Eliminar"><i class="mdi mdi-delete mdi-18px"></i></a>&nbsp;
               @endif
               @if (in_array(29, $permisos) || session()->get('user_name') == 'admin')
-              <a href="javascript:void(0)" onclick="" class="btn btn-secondary" title="Expediente cliente"><i class="mdi mdi-archive mdi-18px"></i></a>
+              <a href="javascript:void(0)" onclick="expediente()" class="btn btn-secondary" title="Expediente cliente"><i class="mdi mdi-archive mdi-18px"></i></a>
               @endif
               <br><br>
               <div class="table-responsive">
@@ -329,9 +329,67 @@
 </div>
 <!-- /.modal -->
 
+<!-- sample modal content -->
+<div class="modal fade" id="modalExpedienteCliente" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" style="display: none;">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="myLargeModalLabel">Crear cliente</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            </div>
+            <div class="modal-body">
+                <ul class="nav nav-pills m-t-30 m-b-30">
+                    <li class=" nav-item"> <a href="#navpills-1" class="nav-link active" data-toggle="tab" aria-expanded="false">Expendiente</a> </li>
+                    <li class="nav-item"> <a href="#navpills-2" class="nav-link" data-toggle="tab" aria-expanded="false">Anexar archivo</a> </li>
+                </ul>
+                <div class="tab-content br-n pn">
+                    <div id="navpills-1" class="tab-pane active expedientes" >
+                        
+                    </div>
+                    <div id="navpills-2" class="tab-pane">
+                        <div class="row">
+                            <div class="col-lg-12">
+                              <form action="{{ url('clientes/expediente') }}" method="post" enctype="multipart/form-data">
+                                {{ csrf_field() }}
+                                <input type="hidden" name="id_cliente" id="id_cliente_exp">
+                                <div class="form-group">
+                                    <label>Anexar</label>
+                                    <div class="fileinput fileinput-new input-group" data-provides="fileinput">
+                                        <div class="form-control" data-trigger="fileinput">
+                                            <i class="fa fa-file fileinput-exists"></i>
+                                            <span class="fileinput-filename"></span>
+                                        </div>
+                                        <span class="input-group-addon btn btn-secondary btn-file"> 
+                                            <span class="fileinput-new">Seleccionar</span>
+                                        <span class="fileinput-exists">Cambiar</span>
+                                        <input type="file" name="expediente">
+                                        </span>
+                                        <a href="#" class="input-group-addon btn btn-secondary fileinput-exists" data-dismiss="fileinput">Quitar</a> </div>
+
+                                        <br>
+                                        <button type="submit" class="btn btn-success btn-block">Guardar</button>
+                                </div>
+                              </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger waves-effect text-left" data-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->
+
 @endsection
 
 @push('scripts')
+
+<script src="{{asset('assets/js/jasny-bootstrap.js')}}"></script>
 
 <script>
   const id_usuario = {{session()->get('user_id')}};
@@ -497,6 +555,38 @@
       );
     }
 
+  }
+
+  function expediente()
+  {
+    var count = $('.clientes:checked').length;
+    var cliente = '';
+
+    if (count != 0 && count == 1) {
+      cliente = $('.clientes:checked').val();
+
+      $('#id_cliente_exp').val(cliente);
+
+      $.ajax({
+        url: '{{ url("clientes/getExpediente") }}/'+cliente,
+        type: 'GET',
+        dataType: 'HTML',
+        success: function(response) {
+
+          $('#modalExpedienteCliente').find('.expedientes').html(response);
+
+          $('#modalExpedienteCliente').modal('show');
+        },
+        error: function(error) {
+          console.dir(error);
+        }
+      });
+      
+    } else if (count == 0) {
+      swal('Vacío', 'No has seleccionado ningun cliente', 'info');
+    } else {
+      swal('Warning','No puedes seleccionar más de 1 cliente', 'warning');
+    }
   }
 
   function upperCase(cmp)

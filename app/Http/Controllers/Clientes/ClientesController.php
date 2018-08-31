@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Clientes;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use DB;
+use Illuminate\Support\Facades\Input;
 
 class ClientesController extends Controller
 {
@@ -204,5 +205,69 @@ class ClientesController extends Controller
     	echo json_encode([
     		"status" => $status
     	]);
+    }
+
+    public function upload(Request $request)
+    {
+    	$file            = $request->file('expediente');
+    	$destinationPath = 'assets/uploads';
+    	$nombre_archivo        = $file->getClientOriginalName();
+    	$extension       = $file->getClientOriginalExtension();
+    	$filename        = $request->id_cliente . '_'. $nombre_archivo;
+    	
+    	$tipo_documento = "";
+
+    	if ($extension == "jpeg" || $extension == "jpg" || $extension == "gif" || $extension == "png" || $extension == "raw" || $extension == "bmp") {
+    	    $tipo_documento = "Imagen";
+    	} else if ($extension == "exe") {
+    	    $tipo_documento = "Aplicación";
+    	} else if ($extension == "sql") {
+    	    $tipo_documento = "Scripts";
+    	} else if ($extension == "html" || $extension == "php" || $extension == "css" || $extension == "js" || $extension == "jar") {
+    	    $tipo_documento = "Código fuente";
+    	} else if ($extension == "zip" || $extension == "rar") {
+    	    $tipo_documento = "Comprimido";
+    	} else {
+    	    $tipo_documento = "Documento";
+    	}
+
+    	DB::beginTransaction();
+
+    	try {
+    		$data = [];
+    		$data['id_cliente'] = $request->id_cliente;
+    		$data['archivo'] = $nombre_archivo;
+    		$data['extension'] = $extension;
+    		$data['tipo'] = $tipo_documento;
+
+    		DB::table('expedientes_clientes')->insert($data);
+
+    		$upload_success = $file->move($destinationPath, $filename);
+
+    		DB::commit();
+
+    		\Helper::messageFlash('success', 'Clientes', 'Se ha cargado el archivo al expediente.');
+			return redirect()->back();
+
+    	} catch (Exception $e) {
+    		DB::rollback();
+    		\Helper::messageFlash('danger', 'Clientes', 'Ha ocurrido un error inesperado. Vuelva a intentarlo por favor.');
+			return redirect()->back();
+    	}
+
+    }
+
+    public function getUpload($id)
+    {
+    	$expedientes = DB::table('expedientes_clientes')->where('id_cliente',$id)->get();
+
+    	return view('clientes.ajax.expedientes', compact('expedientes'));
+    }
+
+    public function download($id)
+    {
+    	$archivo = DB::table('expedientes_clientes')->where('id',$id)->value(DB::raw('CONCAT(id_cliente,"_",archivo) AS archivo'));
+
+    	return response()->download("assets/uploads/$archivo");
     }
 }
